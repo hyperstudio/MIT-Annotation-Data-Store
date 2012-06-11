@@ -20,8 +20,8 @@
     </section> <!-- /container -->
 
     <script type="text/template" id="annotation-template">
-        <p>{{title}}</p>
-        <p>{{description}}</p>
+        <p>{{quote}}</p>
+        <p>{{text}}</p>
     </script>
 
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -34,8 +34,8 @@
         // model
         PX.Annotation = Backbone.Model.extend({
             defaults: {
-                title: null,
-                description: null
+                quote: null,
+                text: null
             }
         });
 
@@ -69,7 +69,7 @@
 
         PX.AnnotationView = Backbone.View.extend({
             tagName: "li",
-            className: "annotation",
+            className: "Annotation",
             initialize: function (options) {
                 this.template = $('#annotation-template').html();
             },

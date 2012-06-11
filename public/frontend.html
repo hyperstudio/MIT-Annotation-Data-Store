@@ -2,130 +2,146 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Annotations Frontend :: Backbone integration with Node.js/Express.JS and MongoDB API</title>
+    <title>Annotations Frontend to demo Backbone integration with Node.js/Express.js and Mongoose to MongoDB API</title>
+	<link rel="stylesheet" href="/lib/less/bootstrap.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<link rel="stylesheet" href="/lib/less/responsive.css" type="text/css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
-    <section id="api">
-      <h1>Nouns...</h1>
-      <p>
-        /annotations<br>
-        /annotations/:id
-      </p>
-    </section>
-    <section id="container">
-      <h1>Annotation List</h1>
-      <p>
-        To render the annotation list use the route '#list' following the url for this page
-      </p>
-    </section> <!-- /container -->
 
-    <script type="text/template" id="annotation-template">
-        <p><a href="/api/annotations/{{_id}}">{{title}}</a></p>
-        <p>{{description}}</p>
-    </script>
+	<div class="container">
 
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.1/underscore-min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.0/backbone-min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.3.0/mustache.min.js"></script>
-    <script>
-        PX = window.PX || {};
-
-        // model
-        PX.Annotation = Backbone.Model.extend({
-            defaults: {
-                title: null,
-                description: null
-            }
-        });
-
-        // collection
-        (function () {
-            var AnnotationList;
-
-            AnnotationList = Backbone.Collection.extend({
-                model: PX.Annotation,
-                url: '/api/annotations',
-                initialize: function () {
-                    this.fetch({
-                        success: this.fetchSuccess,
-                        error: this.fetchError
-                    });
-                    this.deferred = new $.Deferred();
-                },
-                deferred: Function.constructor.prototype,
-                fetchSuccess: function (collection, response) {
-                    collection.deferred.resolve();
-                },
-                fetchError: function (collection, response) {
-                    throw new Error("Annotations fetch did get collection from API");
-                }
-            });
-
-            PX.annotations = new AnnotationList();
-            AnnotationList = null;
-        }());
+		<div class="row">
+		  <div class="span8">
+		      <h1>Nouns...</h1>
+		      <p>
+		        /annotations<br>
+		        /annotations/:id
+		      </p>
+		    </section>
+		    <section id="container">
+		      <h1>Annotation List</h1>
+		      <p>
+		        To render the annotation list use the route '#list' following the url for this page
+		      </p>
+		    </section> <!-- /container -->
 
 
-        PX.AnnotationView = Backbone.View.extend({
-            tagName: "li",
-            className: "annotation",
-            initialize: function (options) {
-                this.template = $('#annotation-template').html();
-            },
-            render: function () {
-                var markup = Mustache.to_html(this.template, this.model.toJSON());
-                this.$el.html(markup).attr('id',this.model.get('_id'));
-                return this;
-            }
-        });
+		    <script type="text/template" id="annotation-template">
+		        <p><a href="/api/annotations/{{_id}}">{{text}}</a></p>
+		        <p>{{quote}}</p>
+		    </script>
 
-        PX.AnnotationListView = Backbone.View.extend({
-            tagName: "ul",
-            className: "annotations",
-            // initialize: function (options) {
-            //     this.container = options.container;
-            // },
-            render: function () {
-                var i, len = this.collection.length;
-                for (i=0; i < len; i++) {
-                    this.renderItem(this.collection.models[i]);
-                };
-                $(this.container).find(this.className).remove();
-                this.$el.appendTo(this.options.container);
-                return this;
-            },
-            renderItem: function (model) {
-                var item = new PX.AnnotationView({
-                    "model": model
-                });
-                item.render().$el.appendTo(this.$el);
-            }
-        });
+		    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.1/underscore-min.js"></script>
+		    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.0/backbone-min.js"></script>
+		    <script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.3.0/mustache.min.js"></script>
 
-        // application
-        PX.App = Backbone.Router.extend({
-            routes: {
-                "/": "listAnnotations",
-                "list": "listAnnotations"
-            },
-            //initialize: function (options) {},
-            listAnnotations: function () {
-                var annotationsList = new PX.AnnotationListView({
-                    "container": $('#container'),
-                    "collection": PX.annotations
-                });
-                PX.annotations.deferred.done(function () {
-                    annotationsList.render();
-                });
-            }
-        });
+			<script type="text/javascript" charset="utf-8">
+				$("p").html("This frame supports CORS: <span>" +
+			                jQuery.support.cors + "</span>");
+			</script>
 
-        // bootstrap
-        PX.app = new PX.App();
-        Backbone.history.start();
+		    <script>
+		        PX = window.PX || {};
 
-    </script>
+		        // model
+		        PX.Annotation = Backbone.Model.extend({
+		            defaults: {
+		                quote: null,
+		                text: null
+		            }
+		        });
 
+		        // collection
+		        (function () {
+		            var AnnotationList;
+
+		            AnnotationList = Backbone.Collection.extend({
+		                model: PX.Annotation,
+		                url: '/api/annotations',
+		                initialize: function () {
+		                    this.fetch({
+		                        success: this.fetchSuccess,
+		                        error: this.fetchError
+		                    });
+		                    this.deferred = new $.Deferred();
+		                },
+		                deferred: Function.constructor.prototype,
+		                fetchSuccess: function (collection, response) {
+		                    collection.deferred.resolve();
+		                },
+		                fetchError: function (collection, response) {
+		                    throw new Error("Annotations fetch did get collection from API");
+		                }
+		            });
+
+		            PX.annotations = new AnnotationList();
+		            AnnotationList = null;
+		        }());
+
+
+		        PX.AnnotationView = Backbone.View.extend({
+		            tagName: "li",
+		            className: "annotation",
+		            initialize: function (options) {
+		                this.template = $('#annotation-template').html();
+		            },
+		            render: function () {
+		                var markup = Mustache.to_html(this.template, this.model.toJSON());
+		                this.$el.html(markup).attr('id',this.model.get('_id'));
+		                return this;
+		            }
+		        });
+
+		        PX.AnnotationListView = Backbone.View.extend({
+		            tagName: "ul",
+		            className: "annotations",
+		            // initialize: function (options) {
+		            //     this.container = options.container;
+		            // },
+		            render: function () {
+		                var i, len = this.collection.length;
+		                for (i=0; i < len; i++) {
+		                    this.renderItem(this.collection.models[i]);
+		                };
+		                $(this.container).find(this.className).remove();
+		                this.$el.appendTo(this.options.container);
+		                return this;
+		            },
+		            renderItem: function (model) {
+		                var item = new PX.AnnotationView({
+		                    "model": model
+		                });
+		                item.render().$el.appendTo(this.$el);
+		            }
+		        });
+
+		        // application
+		        PX.App = Backbone.Router.extend({
+		            routes: {
+		                "/": "listAnnotations",
+		                "list": "listAnnotations"
+		            },
+		            //initialize: function (options) {},
+		            listAnnotations: function () {
+		                var annotationsList = new PX.AnnotationListView({
+		                    "container": $('#container'),
+		                    "collection": PX.annotations
+		                });
+		                PX.annotations.deferred.done(function () {
+		                    annotationsList.render();
+		                });
+		            }
+		        });
+
+		        // bootstrap
+		        PX.app = new PX.App();
+		        Backbone.history.start();
+		    </script>
+		  </div> <!-- span8 -->
+		  <div class="span4">...</div>
+		</div> <!-- row -->
+	</div><!-- container -->
+	
   </body>
 </html>
