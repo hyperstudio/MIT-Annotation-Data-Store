@@ -2,13 +2,13 @@
 
 // CREATE
 
-jQuery.post("/api/products", {
+jQuery.post("/api/annotations", {
   "title": "My Awesome T-shirt",  
   "description": "All about the details. Of course it's black.",  
   "images": [  
     {  
       "kind": "thumbnail",  
-      "url": "images/products/1234/main.jpg"  
+      "url": "images/annotations/1234/main.jpg"  
     }  
   ],  
   "categories": [  
@@ -22,11 +22,11 @@ jQuery.post("/api/products", {
       "images": [  
         {  
           "kind": "thumbnail",  
-          "url": "images/products/1234/thumbnail.jpg"  
+          "url": "images/annotations/1234/thumbnail.jpg"  
         },
         {  
           "kind": "catalog",  
-          "url": "images/products/1234/black.jpg"  
+          "url": "images/annotations/1234/black.jpg"  
         }  
       ],  
       "sizes": [  
@@ -57,14 +57,14 @@ jQuery.post("/api/products", {
 
 // READ
 
-jQuery.get("/api/products/", function(data, textStatus, jqXHR) { 
+jQuery.get("/api/annotations/", function(data, textStatus, jqXHR) { 
     console.log("Post resposne:"); 
     console.dir(data); 
     console.log(textStatus); 
     console.dir(jqXHR); 
 });
 
-jQuery.get("/api/products/4f34734d21289c1c28000007", function(data, textStatus, jqXHR) { 
+jQuery.get("/api/annotations/4f34734d21289c1c28000007", function(data, textStatus, jqXHR) { 
     console.log("Post resposne:"); 
     console.dir(data); 
     console.log(textStatus); 
@@ -74,7 +74,7 @@ jQuery.get("/api/products/4f34734d21289c1c28000007", function(data, textStatus, 
 // UPDATE
 
 jQuery.ajax({
-    url: "/api/products/4f34734d21289c1c28000007", 
+    url: "/api/annotations/4f34734d21289c1c28000007", 
     type: "PUT",
     data: {
       "title": "My Awesome T-shirt",  
@@ -82,7 +82,7 @@ jQuery.ajax({
       "images": [  
         {  
           "kind": "thumbnail",  
-          "url": "images/products/1234/main.jpg"  
+          "url": "images/annotations/1234/main.jpg"  
         }  
       ],  
       "categories": [  
@@ -96,7 +96,7 @@ jQuery.ajax({
           "images": [  
             {  
               "kind": "zoom",  
-              "url": "images/products/1234/zoom.jpg"  
+              "url": "images/annotations/1234/zoom.jpg"  
             }
           ],  
           "sizes": [  
@@ -123,4 +123,4 @@ jQuery.ajax({
 
 // Delete
 
-jQuery.ajax({url: "/api/products/4f34734d21289c1c28000007", type: "DELETE", success: function(data, textStatus, jqXHR) { console.dir(data); }});
+jQuery.ajax({url: "/api/annotations/4f34734d21289c1c28000007", type: "DELETE", success: function(data, textStatus, jqXHR) { console.dir(data); }});
