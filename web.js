@@ -204,5 +204,8 @@ app.delete('/api/annotations/:id', function (req, res) {
 });
 
 // launch server
-app.listen(4242);
-console.log('> http server has started on port 4242');
+
+var port = process.env.PORT || 5000;
+app.listen(port, function() {
+  console.log("Listening on " + port);
+});
