@@ -84,15 +84,21 @@ var Permissions = new Schema({
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // REST api
-
+// root
 app.get('/api', function (req, res) {
   res.send('Annotations API is running');
 });
 
+// Search annotations
 app.get('/api/search', function (req, res) {
-  res.send('Annotations API is running');
+  return AnnotationModel.find({'uri': req.query.text }, function (err, annotations) {
+    if (!err) {
+      return res.send(annotations);
+    } else {
+      return console.log(err);
+    }
+  });
 });
-
 
 // POST to CREATE
 app.post('/api/annotations', function (req, res) {
@@ -176,17 +182,6 @@ app.put('/api/annotations/:id', function (req, res) {
 });
 
 // GET to READ
-// Search annotations
-app.get('/api/search', function (req, res) {
-  return AnnotationModel.find({'uri': req.query.text }, function (err, annotations) {
-    if (!err) {
-      return res.send(annotations);
-    } else {
-      return console.log(err);
-    }
-  });
-});
-
 // List annotations
 app.get('/api/annotations', function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
