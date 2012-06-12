@@ -91,7 +91,7 @@ app.get('/api', function (req, res) {
 
 // Search annotations
 app.get('/api/search', function (req, res) {
-  return AnnotationModel.find({'uri': req.query.text }, function (err, annotations) {
+  return AnnotationModel.find({'uri': req.query.uri }, function (err, annotations) {
     if (!err) {
       return res.send(annotations);
     } else {
