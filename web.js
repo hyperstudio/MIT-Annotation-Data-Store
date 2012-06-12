@@ -176,6 +176,16 @@ app.put('/api/annotations/:id', function (req, res) {
 });
 
 // GET to READ
+// Search annotations
+app.get('/api/search', function (req, res) {
+  return AnnotationModel.find({'uri': req.query.text }, function (err, annotations) {
+    if (!err) {
+      return res.send(annotations);
+    } else {
+      return console.log(err);
+    }
+  });
+});
 
 // List annotations
 app.get('/api/annotations', function (req, res) {
