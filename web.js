@@ -84,9 +84,15 @@ var Permissions = new Schema({
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // REST api
+
 app.get('/api', function (req, res) {
   res.send('Annotations API is running');
 });
+
+app.get('/api/search', function (req, res) {
+  res.send('Annotations API is running');
+});
+
 
 // POST to CREATE
 app.post('/api/annotations', function (req, res) {
