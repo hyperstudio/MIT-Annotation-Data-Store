@@ -31,11 +31,10 @@ mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds03390
 
 // config
 app.configure(function () {
+  app.use(allowCrossDomain);
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(allowCrossDomain);
-
   app.use(lessMiddleware({
       src: __dirname + '/public',
       compress: true
