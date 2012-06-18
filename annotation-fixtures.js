@@ -55,3 +55,8 @@ jQuery.post("/api/annotations", {
 }, function(data, textStatus, jqXHR) { 
     console.log("Post resposne:"); console.dir(data); console.log(textStatus); console.dir(jqXHR); 
 });
+
+// OR
+$.ajax({'type': 'DELETE', "url": "http://localhost:5000/api/annotations"}).done(function(data, textStatus, jqXHR) { 
+    console.log("Delete response:"); console.dir(data); console.log(textStatus); console.dir(jqXHR); 
+});

@@ -59,9 +59,8 @@ var Tags = new Schema({
 });
 
 // Annotation Model
-// TODO:
 var Annotation = new Schema({
-    id: { type: Date, default: Date.now() },
+	id: { type: String, required: false },
     consumer: { type: String, default: "annotationstudio" },
     annotator_schema_version: { type: String, required: true, default: "v1.0" },
     created: { type: Date, default: Date.now() },
@@ -73,6 +72,11 @@ var Annotation = new Schema({
     ranges: [Ranges],
     tags: [Tags],
     permissions: [Permissions],
+});
+
+Annotation.pre('save', function(next) {
+  this.id = this._id;
+  next();
 });
 
 var Permissions = new Schema({
@@ -94,7 +98,7 @@ app.get('/api', function (req, res) {
 app.get('/api/search', function (req, res) {
   return AnnotationModel.find({'uri': req.query.uri }, function (err, annotations) {
     if (!err) {
-      return res.send(annotations);
+      return res.send({'rows': annotations });
     } else {
       return console.log(err);
     }
@@ -107,9 +111,8 @@ app.post('/api/annotations', function (req, res) {
   console.log("POST: ");
   console.log(req.body);
   annotation = new AnnotationModel({
-    id: Date.now(),
     user: req.body.user,
-    consumer: req.body.consumer,
+    consumer: "annotationstudio.org",
     annotator_schema_version: req.body.annotator_schema_version,
     updated: Date.now(),
     text: req.body.text,
@@ -130,8 +133,8 @@ app.post('/api/annotations', function (req, res) {
 });
 
 // PUT to UPDATE
-
 // Bulk update
+// Won't really be doing this will we?
 app.put('/api/annotations', function (req, res) {
     var i, len = 0;
     console.log("is Array req.body.annotations");
@@ -159,18 +162,21 @@ app.put('/api/annotations', function (req, res) {
 });
 
 // Single update
+// This is much more likely
 app.put('/api/annotations/:id', function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
+    annotation._id = req.body._id;
+    annotation.id = req.body._id;
     annotation.user = req.body.user;
     annotation.consumer = req.body.consumer;
     annotation.annotator_schema_version = req.body.annotator_schema_version;
     annotation.updated = Date.now();
-    annotation.id = req.body._id;
     annotation.text = req.body.text;
     annotation.uri = req.body.uri;
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.ranges = req.body.ranges;
+    annotation.permissions = req.body.permissions;
 
     return annotation.save(function (err) {
       if (!err) {
@@ -187,11 +193,11 @@ app.put('/api/annotations/:id', function (req, res) {
 // List annotations
 app.get('/api/annotations', function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
-    if (!err) {
-      return res.send(annotations);
-    } else {
-      return console.log(err);
-    }
+	if (!err) {
+	  return res.send(annotations);
+	} else {
+	  return console.log(err);
+	}
   });
 });
 
