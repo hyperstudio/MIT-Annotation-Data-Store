@@ -61,15 +61,15 @@ var Tags = new Schema({
 // Annotation Model
 // TODO:
 var Annotation = new Schema({
-    id: { type: String, default: "id-" + Date.now() }
+    id: { type: Date, default: Date.now() },
     consumer: { type: String, default: "annotationstudio" },
     annotator_schema_version: { type: String, required: true, default: "v1.0" },
     created: { type: Date, default: Date.now() },
     updated: { type: Date, default: Date.now() },
-    user: { type: String, required: true },
-    text: { type: String, required: true },         
-    quote: { type: String, required: true },    
-    uri: { type: String, required: true },           
+    user: { type: String, required: false },
+    text: { type: String, required: false },         
+    quote: { type: String, required: false },    
+    uri: { type: String, required: false },           
     ranges: [Ranges],
     tags: [Tags],
     permissions: [Permissions],
@@ -107,7 +107,7 @@ app.post('/api/annotations', function (req, res) {
   console.log("POST: ");
   console.log(req.body);
   annotation = new AnnotationModel({
-    id: "id-" + Date.now(),
+    id: Date.now(),
     user: req.body.user,
     consumer: req.body.consumer,
     annotator_schema_version: req.body.annotator_schema_version,
