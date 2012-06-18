@@ -107,6 +107,7 @@ app.post('/api/annotations', function (req, res) {
   console.log("POST: ");
   console.log(req.body);
   annotation = new AnnotationModel({
+    id: ObjectId,
     user: req.body.user,
     consumer: req.body.consumer,
     annotator_schema_version: req.body.annotator_schema_version,
