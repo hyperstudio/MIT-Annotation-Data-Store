@@ -114,6 +114,7 @@ app.post('/api/annotations', function (req, res) {
     user: req.body.user,
     consumer: "annotationstudio.org",
     annotator_schema_version: req.body.annotator_schema_version,
+    created: Date.now(),
     updated: Date.now(),
     text: req.body.text,
     uri: req.body.uri,
@@ -129,6 +130,7 @@ app.post('/api/annotations', function (req, res) {
       return console.log(err);
     }
   });
+  annotation.id = annotation._id;
   return res.send(annotation);
 });
 
