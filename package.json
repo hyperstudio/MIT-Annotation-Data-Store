@@ -1,6 +1,6 @@
 {
-  "name": "annotation-api",
-  "version": "0.0.1",
+  "name": "Marginalia",
+  "version": "0.1",
   "dependencies": {
     "express": "2.5.9",
     "less-middleware": "0.1.4",

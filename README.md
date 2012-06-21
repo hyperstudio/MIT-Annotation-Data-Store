@@ -1,4 +1,3 @@
-annotation-api
+== Marginalia
 ==============
-
-Data Store for Annotation Studio
+Hyperstudio Data Store for Annotation Studio
