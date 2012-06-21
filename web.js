@@ -54,23 +54,19 @@ var Ranges = new Schema({
     endOffset: { type: Number, required: false }
 });
 
-var Tags = new Schema({
-    name: String
-});
-
 // Annotation Model
 var Annotation = new Schema({
 	id: { type: String, required: false },
     consumer: { type: String, default: "annotationstudio" },
     annotator_schema_version: { type: String, required: true, default: "v1.0" },
-    created: { type: Date, default: Date.now() },
-    updated: { type: Date, default: Date.now() },
+    created: { type: String, default: Date.now() },
+    updated: { type: String, default: Date.now() },
     user: { type: String, required: false },
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
     uri: { type: String, required: false },           
     ranges: [Ranges],
-    tags: [Tags],
+    tags: [String],
     permissions: [Permissions],
 });
 
