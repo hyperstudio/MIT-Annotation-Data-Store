@@ -1,36 +1,34 @@
-==Marginalia
-==============
+##  Marginalia
 MIT Hyperstudio Data Store for Annotation Studio
 
-==Derivation
-===annotator-store
+##  Derivation
+### annotator-store
 https://github.com/okfn/annotator-store
 
-
-==Dependencies
-===OKFN Annotator
+## Dependencies
+### OKFN Annotator
 https://github.com/okfn/annotator/
 
-===NodeJS
+### NodeJS
 http://nodejs.org
 
-===Express
+### Express
 http://expressjs.com
 
-===Mongoose
+### Mongoose
 http://mongoosejs.com
 
-===MongoDB
+### MongoDB
 http://www.mongodb.org
 
-==Heroku Installation
+## Heroku Installation
 http://heroku.com
 
-==Author
+## Author
 Jamie Folsom
 MIT HyperStudio
 http://hyperstudio.mit.edu/
 jfolsom@mit.edu
 
-==License
+## License
 &copy; MIT 2012
