@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Annotations Frontend to demo Backbone integration with Node.js/Express.js and Mongoose to MongoDB API</title>
+    <title>Marginalia :: Annotations Frontend to demo Backbone integration with Node.js/Express.js and Mongoose to MongoDB API</title>
 	<link rel="stylesheet" href="/lib/less/bootstrap.css" type="text/css" media="screen" title="no title" charset="utf-8">
 	<link rel="stylesheet" href="/lib/less/responsive.css" type="text/css" media="screen" title="no title" charset="utf-8">
   </head>
@@ -25,10 +25,8 @@
 		      </p>
 		    </section> <!-- /container -->
 
-
 		    <script type="text/template" id="annotation-template">
-		        <p><a href="/api/annotations/{{_id}}">{{text}}</a></p>
-		        <p>{{quote}}</p>
+		        <p><a href="/api/annotations/{{_id}}">{{text}}</a> :: {{quote}}</p>
 		    </script>
 
 		    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
