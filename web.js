@@ -4,8 +4,34 @@ var application_root = __dirname,
     mongoose = require('mongoose');
 
 var lessMiddleware = require('less-middleware');
-var app = express.createServer();
 
+// Authentication
+// var marginAuth = require('margin-auth');
+var jwt = require('jwt-simple');
+var secret = 'secretgoeshere';
+function tokenOK (req, res, next) {
+	var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
+
+	// Test when issued: could be used to determine whether login needed
+	var issuedAt = decoded.issuedAt;
+	console.log("Issued: " + issuedAt);
+
+	// Test when issued: could be used to determine what's visible/editable
+	var ttl = decoded.ttl;
+	console.log("Time to live: " + ttl);
+
+	// Test user: could be used to determine what's visible/editable
+	var userId = decoded.userId;
+	console.log("User: " + userId);
+
+	// Test user: would be used to determine what's visible/editable
+	var consumer = decoded.consumerKey;
+	console.log("App: " + consumer);
+
+	next();
+}
+
+var app = express.createServer();
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -31,6 +57,7 @@ mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds03390
 
 // config
 app.configure(function () {
+//  app.use(auth);
   app.use(allowCrossDomain);
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -91,10 +118,33 @@ app.get('/api', function (req, res) {
 });
 
 // Search annotations
-app.get('/api/search', function (req, res) {
+app.get('/api/search', tokenOK, function (req, res) {
   return AnnotationModel.find({'uri': req.query.uri }, function (err, annotations) {
     if (!err) {
       return res.send({'rows': annotations });
+    } else {
+      return console.log(err);
+    }
+  });
+});
+
+// GET to READ
+// List annotations
+app.get('/api/annotations', tokenOK, function (req, res) {
+  return AnnotationModel.find(function (err, annotations) {
+	if (!err) {
+	  return res.send(annotations);
+	} else {
+	  return console.log(err);
+	}
+  });
+});
+
+// Single annotation
+app.get('/api/annotations/:id', function (req, res) {
+  return AnnotationModel.findById(req.params.id, function (err, annotation) {
+    if (!err) {
+      return res.send(annotation);
     } else {
       return console.log(err);
     }
@@ -184,29 +234,6 @@ app.put('/api/annotations/:id', function (req, res) {
       }
       return res.send(annotation);
     });
-  });
-});
-
-// GET to READ
-// List annotations
-app.get('/api/annotations', function (req, res) {
-  return AnnotationModel.find(function (err, annotations) {
-	if (!err) {
-	  return res.send(annotations);
-	} else {
-	  return console.log(err);
-	}
-  });
-});
-
-// Single annotation
-app.get('/api/annotations/:id', function (req, res) {
-  return AnnotationModel.findById(req.params.id, function (err, annotation) {
-    if (!err) {
-      return res.send(annotation);
-    } else {
-      return console.log(err);
-    }
   });
 });
 
