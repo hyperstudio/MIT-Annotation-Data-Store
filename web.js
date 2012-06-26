@@ -10,25 +10,29 @@ var lessMiddleware = require('less-middleware');
 var jwt = require('jwt-simple');
 var secret = 'secretgoeshere';
 function tokenOK (req, res, next) {
-	var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
+	try {
+		var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
+		// Test when issued: could be used to determine whether login needed
+		var issuedAt = decoded.issuedAt;
+		console.log("Issued: " + issuedAt);
 
-	// Test when issued: could be used to determine whether login needed
-	var issuedAt = decoded.issuedAt;
-	console.log("Issued: " + issuedAt);
+		// Test when issued: could be used to determine what's visible/editable
+		var ttl = decoded.ttl;
+		console.log("Time to live: " + ttl);
 
-	// Test when issued: could be used to determine what's visible/editable
-	var ttl = decoded.ttl;
-	console.log("Time to live: " + ttl);
+		// Test user: could be used to determine what's visible/editable
+		var userId = decoded.userId;
+		console.log("User: " + userId);
 
-	// Test user: could be used to determine what's visible/editable
-	var userId = decoded.userId;
-	console.log("User: " + userId);
-
-	// Test user: would be used to determine what's visible/editable
-	var consumer = decoded.consumerKey;
-	console.log("App: " + consumer);
-
-	next();
+		// Test user: would be used to determine what's visible/editable
+		var consumer = decoded.consumerKey;
+		console.log("App: " + consumer);
+		next();
+	} catch (err) {
+        console.log("Token decode error");
+		console.log(err);
+		return res.send("There was a problem with your authentication token");
+	}
 }
 
 var app = express.createServer();
@@ -130,7 +134,8 @@ app.get('/api/search', tokenOK, function (req, res) {
 
 // GET to READ
 // List annotations
-app.get('/api/annotations', tokenOK, function (req, res) {
+// Authentication: Anyone can see all annotations (no check for token)
+app.get('/api/annotations', function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
 	if (!err) {
 	  return res.send(annotations);
@@ -141,7 +146,8 @@ app.get('/api/annotations', tokenOK, function (req, res) {
 });
 
 // Single annotation
-app.get('/api/annotations/:id', function (req, res) {
+// Authentication: Anyone can see a single annotation (no check for token)
+app.get('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
       return res.send(annotation);
@@ -152,7 +158,8 @@ app.get('/api/annotations/:id', function (req, res) {
 });
 
 // POST to CREATE
-app.post('/api/annotations', function (req, res) {
+// Authentication: Token required to post an annotation
+app.post('/api/annotations', tokenOK, function (req, res) {
   var annotation;
   console.log("POST: ");
   console.log(req.body);
@@ -183,7 +190,8 @@ app.post('/api/annotations', function (req, res) {
 // PUT to UPDATE
 // Bulk update
 // Won't really be doing this will we?
-app.put('/api/annotations', function (req, res) {
+// Authentication: Token required to update all annotations
+app.put('/api/annotations', tokenOK, function (req, res) {
     var i, len = 0;
     console.log("is Array req.body.annotations");
     console.log(Array.isArray(req.body.annotations));
@@ -211,7 +219,8 @@ app.put('/api/annotations', function (req, res) {
 
 // Single update
 // This is much more likely
-app.put('/api/annotations/:id', function (req, res) {
+// Authentication: Token required to update one annotation
+app.put('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     annotation._id = req.body._id;
     annotation.id = req.body._id;
@@ -239,7 +248,8 @@ app.put('/api/annotations/:id', function (req, res) {
 
 // DELETE to DESTROY
 // Bulk destroy all annotations
-app.delete('/api/annotations', function (req, res) {
+// Authentication: Token required to delete all annotations
+app.delete('/api/annotations', tokenOK, function (req, res) {
   AnnotationModel.remove(function (err) {
     if (!err) {
       console.log("removed");
@@ -251,7 +261,8 @@ app.delete('/api/annotations', function (req, res) {
 });
 
 // remove a single annotation
-app.delete('/api/annotations/:id', function (req, res) {
+// Authentication: Token required to delete one annotation
+app.delete('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     return annotation.remove(function (err) {
       if (!err) {
@@ -265,7 +276,6 @@ app.delete('/api/annotations/:id', function (req, res) {
 });
 
 // launch server
-
 var port = process.env.PORT || 5000;
 app.listen(port, function() {
   console.log("Listening on " + port);
