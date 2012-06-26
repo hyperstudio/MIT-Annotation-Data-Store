@@ -122,6 +122,7 @@ app.get('/api', function (req, res) {
 });
 
 // Search annotations
+// Authentication: Token required to search
 app.get('/api/search', tokenOK, function (req, res) {
   return AnnotationModel.find({'uri': req.query.uri }, function (err, annotations) {
     if (!err) {
@@ -147,7 +148,7 @@ app.get('/api/annotations', function (req, res) {
 
 // Single annotation
 // Authentication: Anyone can see a single annotation (no check for token)
-app.get('/api/annotations/:id', tokenOK, function (req, res) {
+app.get('/api/annotations/:id', function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
       return res.send(annotation);
