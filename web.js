@@ -9,30 +9,32 @@ var lessMiddleware = require('less-middleware');
 // var marginAuth = require('margin-auth');
 var jwt = require('jwt-simple');
 var secret = 'secretgoeshere';
+
 function tokenOK (req, res, next) {
 	try {
 		var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
-		// Test when issued: could be used to determine whether login needed
-		var issuedAt = decoded.issuedAt;
-		console.log("Issued: " + issuedAt);
-
-		// Test when issued: could be used to determine what's visible/editable
-		var ttl = decoded.ttl;
-		console.log("Time to live: " + ttl);
-
-		// Test user: could be used to determine what's visible/editable
-		var userId = decoded.userId;
-		console.log("User: " + userId);
-
-		// Test user: would be used to determine what's visible/editable
-		var consumer = decoded.consumerKey;
-		console.log("App: " + consumer);
+		if (inWindow(decoded)) {
+			console.log("Token in time window");
+		} 
+		else {
+			console.log("Token not in in time window.");
+		} 
 		next();
 	} catch (err) {
-        console.log("Token decode error");
+        console.log("Error decoding token:");
 		console.log(err);
 		return res.send("There was a problem with your authentication token");
 	}
+}
+
+function inWindow (decoded, next) {
+	var issuedAt = decoded.issuedAt; console.log("Issued: " + issuedAt);
+	var ttl = decoded.ttl; console.log("Time to live: " + ttl);
+	var issuedSeconds = new Date(issuedAt) / 1000; console.log("Epoch seconds at issue time: " + issuedSeconds);
+	var nowSeconds = new Date().getTime() / 1000;	console.log("Epoch seconds now: " + nowSeconds);
+	var diff = ((nowSeconds - issuedSeconds)); console.log("Diff in seconds: " + diff);
+	var result = (ttl - diff); console.log("Time left: " + result);
+ 	return ((result > 0) ? true : false);
 }
 
 var app = express.createServer();
@@ -115,14 +117,13 @@ var Permissions = new Schema({
 
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
-// REST api
-// root
+// REST API root route
 app.get('/api', function (req, res) {
   res.send('Annotations API is running');
 });
 
 // Search annotations
-// Authentication: Token required to search
+// Auth: Token required to search
 app.get('/api/search', tokenOK, function (req, res) {
   return AnnotationModel.find({'uri': req.query.uri }, function (err, annotations) {
     if (!err) {
@@ -135,7 +136,7 @@ app.get('/api/search', tokenOK, function (req, res) {
 
 // GET to READ
 // List annotations
-// Authentication: Anyone can see all annotations (no check for token)
+// Auth: Anyone can see all annotations (no check for token)
 app.get('/api/annotations', function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
 	if (!err) {
@@ -147,7 +148,7 @@ app.get('/api/annotations', function (req, res) {
 });
 
 // Single annotation
-// Authentication: Anyone can see a single annotation (no check for token)
+// Auth: Anyone can see a single annotation (no check for token)
 app.get('/api/annotations/:id', function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
@@ -159,7 +160,7 @@ app.get('/api/annotations/:id', function (req, res) {
 });
 
 // POST to CREATE
-// Authentication: Token required to post an annotation
+// Auth: Token required to post an annotation
 app.post('/api/annotations', tokenOK, function (req, res) {
   var annotation;
   console.log("POST: ");
@@ -189,9 +190,10 @@ app.post('/api/annotations', tokenOK, function (req, res) {
 });
 
 // PUT to UPDATE
-// Bulk update
-// Won't really be doing this will we?
-// Authentication: Token required to update all annotations
+// Bulk update: we won't really be doing this will we?
+// Auth: Token required to update all annotations
+// Permissions: update only own annotations
+// Permissions: admin can update all annotations
 app.put('/api/annotations', tokenOK, function (req, res) {
     var i, len = 0;
     console.log("is Array req.body.annotations");
@@ -218,9 +220,9 @@ app.put('/api/annotations', tokenOK, function (req, res) {
     return res.send(req.body.annotations);
 });
 
-// Single update
-// This is much more likely
-// Authentication: Token required to update one annotation
+// Single update: This is much more likely
+// Auth: Token required to update one annotation
+// Permissions: update only own annotations
 app.put('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     annotation._id = req.body._id;
@@ -249,7 +251,9 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
 
 // DELETE to DESTROY
 // Bulk destroy all annotations
-// Authentication: Token required to delete all annotations
+// Auth: Token required to delete all annotations
+// Permissions: user can delete only own annotations
+// Permissions: admin can delete all annotations
 app.delete('/api/annotations', tokenOK, function (req, res) {
   AnnotationModel.remove(function (err) {
     if (!err) {
@@ -261,8 +265,10 @@ app.delete('/api/annotations', tokenOK, function (req, res) {
   });
 });
 
-// remove a single annotation
-// Authentication: Token required to delete one annotation
+// Remove a single annotation
+// Auth: Token required to delete one annotation
+// Permissions: user can delete only own annotations
+// Permissions: admin can delete any annotations
 app.delete('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     return annotation.remove(function (err) {
