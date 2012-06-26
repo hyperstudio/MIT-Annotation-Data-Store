@@ -9,7 +9,7 @@ https://github.com/okfn/annotator-store
 ### OKFN Annotator
 https://github.com/okfn/annotator/
 
-### NodeJS
+### Backbone
 http://backbone.js
 
 ### NodeJS
