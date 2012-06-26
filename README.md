@@ -28,10 +28,10 @@ http://www.mongodb.org
 http://heroku.com
 
 ## Author
-Jamie Folsom
-MIT HyperStudio
-http://hyperstudio.mit.edu/
-jfolsom@mit.edu
+- Jamie Folsom
+- MIT HyperStudio
+- http://hyperstudio.mit.edu/
+- jfolsom@mit.edu
 
 ## License
 &copy; MIT 2012
