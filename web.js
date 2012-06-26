@@ -5,11 +5,11 @@ var application_root = __dirname,
 
 var lessMiddleware = require('less-middleware');
 
+var app = express.createServer();
+
 // Authentication
-// var marginAuth = require('margin-auth');
 var jwt = require('jwt-simple');
 var secret = 'secretgoeshere';
-
 function tokenOK (req, res, next) {
 	try {
 		var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
@@ -25,19 +25,17 @@ function tokenOK (req, res, next) {
 		console.log(err);
 		return res.send("There was a problem with your authentication token");
 	}
-}
+};
 
 function inWindow (decoded, next) {
-	var issuedAt = decoded.issuedAt; console.log("Issued: " + issuedAt);
-	var ttl = decoded.ttl; console.log("Time to live: " + ttl);
-	var issuedSeconds = new Date(issuedAt) / 1000; console.log("Epoch seconds at issue time: " + issuedSeconds);
-	var nowSeconds = new Date().getTime() / 1000;	console.log("Epoch seconds now: " + nowSeconds);
-	var diff = ((nowSeconds - issuedSeconds)); console.log("Diff in seconds: " + diff);
-	var result = (ttl - diff); console.log("Time left: " + result);
+	var issuedAt = decoded.issuedAt; 
+	var ttl = decoded.ttl; 
+	var issuedSeconds = new Date(issuedAt) / 1000; 
+	var nowSeconds = new Date().getTime() / 1000;	
+	var diff = ((nowSeconds - issuedSeconds)); 
+	var result = (ttl - diff); console.log("Time left on token: " + result);
  	return ((result > 0) ? true : false);
 }
-
-var app = express.createServer();
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -63,7 +61,7 @@ mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds03390
 
 // config
 app.configure(function () {
-//  app.use(auth);
+  // app.use(tokenOK);
   app.use(allowCrossDomain);
   app.use(express.bodyParser());
   app.use(express.methodOverride());
