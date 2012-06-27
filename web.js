@@ -33,7 +33,7 @@ function inWindow (decoded, next) {
 	var issuedSeconds = new Date(issuedAt) / 1000; 
 	var nowSeconds = new Date().getTime() / 1000;	
 	var diff = ((nowSeconds - issuedSeconds)); 
-	var result = (ttl - diff); console.log("Time left on token: " + result);
+	var result = (ttl - diff); console.log("Time left on token: about " + Math.floor(result/(60*60)) + " hours.");
  	return ((result > 0) ? true : false);
 }
 
