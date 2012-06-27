@@ -190,8 +190,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
 // PUT to UPDATE
 // Bulk update: we won't really be doing this will we?
 // Auth: Token required to update all annotations
-// Permissions: update only own annotations
-// Permissions: admin can update all annotations
+// Permissions: users can update only their own annotations (handled by annotator)
 app.put('/api/annotations', tokenOK, function (req, res) {
     var i, len = 0;
     console.log("is Array req.body.annotations");
@@ -220,7 +219,7 @@ app.put('/api/annotations', tokenOK, function (req, res) {
 
 // Single update: This is much more likely
 // Auth: Token required to update one annotation
-// Permissions: update only own annotations
+// Permissions: users can update only their own annotations (handled by annotator)
 app.put('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     annotation._id = req.body._id;
@@ -250,8 +249,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
 // DELETE to DESTROY
 // Bulk destroy all annotations
 // Auth: Token required to delete all annotations
-// Permissions: user can delete only own annotations
-// Permissions: admin can delete all annotations
+// Permissions: user can delete only own annotations (handled by annotator)
 app.delete('/api/annotations', tokenOK, function (req, res) {
   AnnotationModel.remove(function (err) {
     if (!err) {
@@ -265,8 +263,7 @@ app.delete('/api/annotations', tokenOK, function (req, res) {
 
 // Remove a single annotation
 // Auth: Token required to delete one annotation
-// Permissions: user can delete only own annotations
-// Permissions: admin can delete any annotations
+// Permissions: user can delete only own annotations (handled by annotator)
 app.delete('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     return annotation.remove(function (err) {
