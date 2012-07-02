@@ -2,7 +2,10 @@
 MIT Hyperstudio Data Store for Annotation Studio
 
 ##  Derivation
-### annotator-store
+### Based on this great tutorial by Bill Heaton
+http://pixelhandler.com/blog/2012/02/09/develop-a-restful-api-using-node-js-with-express-and-mongoose/
+
+### Will eventually be an alternative to annotator-store
 https://github.com/okfn/annotator-store
 
 ## Dependencies

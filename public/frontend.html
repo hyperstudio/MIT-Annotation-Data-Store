@@ -52,7 +52,11 @@
 		    </section> <!-- /container -->
 
 		    <script type="text/template" id="annotation-template">
-		        <p><a href="/api/annotations/{{_id}}">{{text}}</a> :: {{quote}}</p>
+			<ul>
+			{{#rows}}
+			  <li><a href="/api/annotations/{{_id}}">{{text}}</a> :: {{quote}}</li>
+			{{/rows}}
+			</ul>
 		    </script>
 
 		    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -77,7 +81,7 @@
 
 		            AnnotationList = Backbone.Collection.extend({
 		                model: PX.Annotation,
-		                url: '/api/annotations',
+		                url: '/api/search?uri=http://blooming-samurai-2296.herokuapp.com/collections/3/documents/5',
 		                initialize: function () {
 		                    this.fetch({
 		                        success: this.fetchSuccess,
@@ -100,7 +104,6 @@
 
 
 		        PX.AnnotationView = Backbone.View.extend({
-		            tagName: "li",
 		            className: "annotation",
 		            initialize: function (options) {
 		                this.template = $('#annotation-template').html();
@@ -113,7 +116,6 @@
 		        });
 
 		        PX.AnnotationListView = Backbone.View.extend({
-		            tagName: "ul",
 		            className: "annotations",
 		            // initialize: function (options) {
 		            //     this.container = options.container;
