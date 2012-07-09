@@ -78,6 +78,10 @@ app.configure(function () {
 var Schema = mongoose.Schema; //Schema.ObjectId
 
 // Schemas
+var annotationData = new Schema({
+    cssselect: { type: String, required: true },
+});
+
 var Ranges = new Schema({
     start: { type: String, required: true },
     end: { type: String, required: true},
@@ -96,6 +100,7 @@ var Annotation = new Schema({
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
     uri: { type: String, required: false },           
+	cssselect : { type: String, required: false },
     ranges: [Ranges],
     tags: [String],
     permissions: [Permissions],
@@ -174,6 +179,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     quote: req.body.quote,
     tags: req.body.tags,
     ranges: req.body.ranges,
+	cssselect : req.body.cssselect,
     permissions: req.body.permissions
   });
   annotation.save(function (err) {
@@ -233,6 +239,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.ranges = req.body.ranges;
+    annotation.cssselect = req.body.cssselect;
     annotation.permissions = req.body.permissions;
 
     return annotation.save(function (err) {
