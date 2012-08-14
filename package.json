@@ -1,14 +1,14 @@
 {
   "name": "Marginalia",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "jwt-simple": "0.1.0",
     "express": "3.0.0rc1",
-    "less-middleware": "0.1.4",
-    "mongoose": "2.7.2"
+    "less-middleware": "0.1.5",
+    "mongoose": "3.0.1"
   },
   "engines": {
-    "node": "0.8.4",
+    "node": "0.8.6",
     "npm": "1.1.41"
   }
 }
