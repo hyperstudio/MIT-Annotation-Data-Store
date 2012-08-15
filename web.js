@@ -1,3 +1,5 @@
+// require('nodetime').profile()
+
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
@@ -73,6 +75,7 @@ app.configure(function () {
 
   app.use(express.static(path.join(application_root, "public")));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.socket.setTimeout(60000, function () { console.info("Timeout");});
 });
 
 var Schema = mongoose.Schema; //Schema.ObjectId
