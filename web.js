@@ -95,7 +95,8 @@ var Ranges = new Schema({
 var Annotation = new Schema({
 	id: { type: String, required: false },
     consumer: { type: String, default: "annotationstudio" },
-    annotator_schema_version: { type: String, required: true, default: "v1.0" },
+    // annotator_schema_version: { type: String, required: true, default: "v1.0" },
+    annotator_schema_version: { type: String, required: false, default: "v1.0" },
     created: { type: String, default: Date.now() },
     updated: { type: String, default: Date.now() },
     user: { type: String, required: false },
