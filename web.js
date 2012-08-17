@@ -1,5 +1,3 @@
-// require('nodetime').profile()
-
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
@@ -57,9 +55,9 @@ var allowCrossDomain = function(req, res, next) {
 
 // database
 // local
-// mongoose.connect('mongodb://localhost/annotationdb');
+mongoose.connect('mongodb://localhost/annotationdb');
 // staging
-mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
+// mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
 
 // config
 app.configure(function () {
@@ -103,7 +101,6 @@ var Annotation = new Schema({
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
     uri: { type: String, required: false },           
-	cssselect : { type: String, required: false },
     ranges: [Ranges],
     tags: [String],
     permissions: [Permissions],
