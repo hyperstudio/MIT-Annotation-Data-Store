@@ -55,9 +55,9 @@ var allowCrossDomain = function(req, res, next) {
 
 // database
 // local
-// mongoose.connect('mongodb://localhost/annotationdb');
+mongoose.connect('mongodb://localhost/annotationdb');
 // staging
-mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
+// mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
 
 // config
 app.configure(function () {
@@ -93,14 +93,14 @@ var Ranges = new Schema({
 var Annotation = new Schema({
 	id: { type: String, required: false },
     consumer: { type: String, default: "annotationstudio" },
-    annotator_schema_version: { type: String, required: true, default: "v1.0" },
+    // annotator_schema_version: { type: String, required: true, default: "v1.0" },
+    annotator_schema_version: { type: String, required: false, default: "v1.0" },
     created: { type: String, default: Date.now() },
     updated: { type: String, default: Date.now() },
     user: { type: String, required: false },
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
     uri: { type: String, required: false },           
-	cssselect : { type: String, required: false },
     ranges: [Ranges],
     tags: [String],
     permissions: [Permissions],
