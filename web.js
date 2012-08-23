@@ -5,7 +5,11 @@ var application_root = __dirname,
 
 var lessMiddleware = require('less-middleware');
 
-var app = express.createServer();
+// var app = express.createServer();
+
+var express = require("express");
+var app = express();
+
 
 // Authentication
 var jwt = require('jwt-simple');
