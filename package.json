@@ -1,13 +1,14 @@
 {
-  "name": "Marginalia",
-  "version": "0.1.0",
+  "name": "Margin Walker",
+  "version": "0.1.2",
   "dependencies": {
     "jwt-simple": "0.1.0",
-    "express": "2.5.9",
-    "less-middleware": "0.1.4",
-    "mongoose": "2.6.6"
+    "express": "3.0.0rc3",
+    "less-middleware": "0.1.5",
+    "mongoose": "3.0.2"
   },
   "engines": {
-    "node": "0.6.x"
+    "node": "0.8.7",
+    "npm": "1.1.49"
   }
 }

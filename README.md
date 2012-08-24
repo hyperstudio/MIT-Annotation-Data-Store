@@ -1,4 +1,4 @@
-##  Marginalia
+##  Margin Walker
 MIT Hyperstudio Data Store for Annotation Studio
 
 ##  Derivation
