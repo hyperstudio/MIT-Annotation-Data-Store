@@ -1,5 +1,5 @@
 {
-  "name": "Margin Walker",
+  "name": "Margin-Walker",
   "version": "0.1.2",
   "dependencies": {
     "jwt-simple": "0.1.0",
