@@ -59,9 +59,9 @@ var allowCrossDomain = function(req, res, next) {
 
 // database
 // local
-mongoose.connect('mongodb://localhost/annotationdb');
+// mongoose.connect('mongodb://localhost/annotationdb');
 // staging
-// mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
+mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
 
 // config
 app.configure(function () {
