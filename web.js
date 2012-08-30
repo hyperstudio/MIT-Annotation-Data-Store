@@ -94,11 +94,17 @@ var Ranges = new Schema({
     endOffset: { type: Number, required: false }
 });
 
+//var Permissions = new Schema({
+//     read: [],
+//     admin: [],
+//     update: [],
+//     delete: []
+// });
+
 // Annotation Model
 var Annotation = new Schema({
 	id: { type: String, required: false },
     consumer: { type: String, default: "annotationstudio" },
-    // annotator_schema_version: { type: String, required: true, default: "v1.0" },
     annotator_schema_version: { type: String, required: false, default: "v1.0" },
     created: { type: String, default: Date.now() },
     updated: { type: String, default: Date.now() },
@@ -108,19 +114,17 @@ var Annotation = new Schema({
     uri: { type: String, required: false },           
     ranges: [Ranges],
     tags: [String],
-    permissions: [Permissions],
+    permissions: {
+	    read: [String],
+	    admin: [String],
+	    update: [String],
+	    delete: [String]
+	}
 });
 
 Annotation.pre('save', function(next) {
   this.id = this._id;
   next();
-});
-
-var Permissions = new Schema({
-    read: [],
-    admin: [],
-    update: [],
-    delete: []
 });
 
 var AnnotationModel = mongoose.model('Annotation', Annotation);
