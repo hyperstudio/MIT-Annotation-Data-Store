@@ -1,3 +1,8 @@
+require('nodetime').profile({
+    accountKey: '54fedc3f4e93713557fe35130652deddd7f0f46c', 
+    appName: 'Annotation API'
+});
+
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
@@ -82,10 +87,6 @@ app.configure(function () {
 var Schema = mongoose.Schema; //Schema.ObjectId
 
 // Schemas
-var annotationData = new Schema({
-    cssselect: { type: String, required: true },
-});
-
 var Ranges = new Schema({
     start: { type: String, required: true },
     end: { type: String, required: true},
@@ -174,7 +175,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
   console.log(req.body);
   annotation = new AnnotationModel({
     user: req.body.user,
-    consumer: "annotationstudio.org",
+    consumer: "annotationstudio.mit.edu",
     annotator_schema_version: req.body.annotator_schema_version,
     created: Date.now(),
     updated: Date.now(),
@@ -183,7 +184,6 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     quote: req.body.quote,
     tags: req.body.tags,
     ranges: req.body.ranges,
-	cssselect : req.body.cssselect,
     permissions: req.body.permissions
   });
   annotation.save(function (err) {
@@ -243,7 +243,6 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.ranges = req.body.ranges;
-    annotation.cssselect = req.body.cssselect;
     annotation.permissions = req.body.permissions;
 
     return annotation.save(function (err) {
