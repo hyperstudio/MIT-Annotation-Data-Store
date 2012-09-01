@@ -1,8 +1,7 @@
-require('nodetime').profile({
-    accountKey: '54fedc3f4e93713557fe35130652deddd7f0f46c', 
-    appName: 'Annotation API'
-});
-
+// require('nodetime').profile({
+//     accountKey: '54fedc3f4e93713557fe35130652deddd7f0f46c', 
+//     appName: 'Annotation API'
+// });
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
