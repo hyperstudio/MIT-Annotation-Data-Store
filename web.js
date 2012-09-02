@@ -111,10 +111,7 @@ var Annotation = new Schema({
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
     uri: { type: String, required: false },           
-    annotationData: {
-	    uri: { type: String, required: false },           
-	    group: { type: String, required: false },           
-	},
+    groups: [String],           
     ranges: [Ranges],
     tags: [String],
     permissions: {
@@ -147,8 +144,8 @@ app.get('/api/search', function (req, res) {
 		query.where('user').equals(req.query.user);
 	}
 
-	if (req.query.group) {
-		query.where('annotationData.group').equals(req.query.group);
+	if (req.query.groups) {
+		query.where('groups').in(req.query.groups);
 	}
 
 	// if (req.query.permissions[read]) {};
@@ -202,7 +199,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     uri: req.body.uri,
     quote: req.body.quote,
     tags: req.body.tags,
-    annotationData: req.body.annotationData,
+    groups: req.body.groups,
     ranges: req.body.ranges,
     permissions: req.body.permissions
   });
@@ -262,7 +259,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.uri = req.body.uri;
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
-    annotationData = req.body.annotationData;
+    annotation.groups = req.body.groups;
     annotation.ranges = req.body.ranges;
     annotation.permissions = req.body.permissions;
 
