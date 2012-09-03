@@ -1,7 +1,3 @@
-// require('nodetime').profile({
-//     accountKey: '54fedc3f4e93713557fe35130652deddd7f0f46c', 
-//     appName: 'Annotation API'
-// });
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
@@ -9,11 +5,8 @@ var application_root = __dirname,
 
 var lessMiddleware = require('less-middleware');
 
-// var app = express.createServer();
-
 var express = require("express");
 var app = express();
-
 
 // Authentication
 var jwt = require('jwt-simple');
@@ -143,6 +136,7 @@ app.get('/api/search', function (req, res) {
 	    console.log("Groups requested, and matched: "+req.query.groups);
 	}
 
+	// Here's where we handle permissions.
 	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
     //console.log("Permissions matched: "+ );
 
