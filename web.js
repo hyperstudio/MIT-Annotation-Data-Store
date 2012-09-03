@@ -93,13 +93,6 @@ var Ranges = new Schema({
     endOffset: { type: Number, required: false }
 });
 
-//var Permissions = new Schema({
-//     read: [],
-//     admin: [],
-//     update: [],
-//     delete: []
-// });
-
 // Annotation Model
 var Annotation = new Schema({
 	id: { type: String, required: false },
@@ -142,11 +135,16 @@ app.get('/api/search', function (req, res) {
 	// Handle other query parameters, like user, permissions, tags, etc.
 	if (req.query.user) {
 		query.where('user').equals(req.query.user);
+	    console.log("User requested, and matched: "+req.query.user);
 	}
 
 	if (req.query.groups) {
 		query.where('groups').in(req.query.groups);
+	    console.log("Groups requested, and matched: "+req.query.groups);
 	}
+
+	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
+    //console.log("Permissions matched: "+ );
 
 	// if (req.query.permissions[read]) {};
 	query.exec(function (err, annotations) {
