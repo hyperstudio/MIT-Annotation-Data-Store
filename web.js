@@ -143,6 +143,7 @@ app.get('/api/search', function (req, res) {
 	    console.log("Groups requested, and matched: "+req.query.groups);
 	}
 
+	// Here's where we handle permissions.
 	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
     //console.log("Permissions matched: "+ );
 
