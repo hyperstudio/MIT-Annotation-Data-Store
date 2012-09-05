@@ -138,16 +138,28 @@ app.get('/api/search', function (req, res) {
 
 	// Here's where we handle permissions.
 	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
-    //console.log("Permissions matched: "+ );
 
+	if (req.query.sidebar) {
+	    console.log("Sidebar: "+ JSON.stringify(req.query));
+		query.exec(function (err, annotations) {
+		  if (!err) {
+		    return res.send(annotations);
+		  } else {
+		    return console.log(err);
+		  }
+		});
+	}
+	else {
+	    console.log("No Sidebar: "+ JSON.stringify(req.query));
+		query.exec(function (err, annotations) {
+		  if (!err) {
+		    return res.send({'rows': annotations });
+		  } else {
+		    return console.log(err);
+		  }
+		});
+	}
 	// if (req.query.permissions[read]) {};
-	query.exec(function (err, annotations) {
-	  if (!err) {
-	    return res.send({'rows': annotations });
-	  } else {
-	    return console.log(err);
-	  }
-	});
 });
 
 // GET to READ
