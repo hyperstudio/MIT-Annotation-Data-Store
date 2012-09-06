@@ -281,17 +281,19 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
 // DELETE to DESTROY
 // Bulk destroy all annotations
 // Auth: Token required to delete all annotations
+// NOTE: Can't think of a good use case -- commenting out. jF 09/06/2010
 // Permissions: user can delete only own annotations (handled by annotator)
-app.delete('/api/annotations', tokenOK, function (req, res) {
-  AnnotationModel.remove(function (err) {
-    if (!err) {
-      console.log("removed");
-      return res.send('');
-    } else {
-      console.log(err);
-    }
-  });
-});
+// app.delete('/api/annotations', tokenOK, function (req, res) {
+//   AnnotationModel.remove(function (err) {
+//     if (!err) {
+//       console.log("removed");
+//       return res.send('');
+//     } else {
+//       console.log(err);
+//     }
+//   });
+// });
+
 
 // Remove a single annotation
 // Auth: Token required to delete one annotation
