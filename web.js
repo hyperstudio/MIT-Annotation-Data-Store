@@ -96,7 +96,8 @@ var Annotation = new Schema({
     user: { type: String, required: false },
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
-    uri: { type: String, required: false },           
+    uri: { type: String, required: false },
+    uuid: { type: String, required: false },
     groups: [String],           
     ranges: [Ranges],
     tags: [String],
@@ -140,7 +141,7 @@ app.get('/api/search', function (req, res) {
 	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
 
 	if (req.query.sidebar) {
-	    console.log("Sidebar: "+ JSON.stringify(req.query));
+	    console.log("Sidebar request: "+ JSON.stringify(req.query));
 		query.exec(function (err, annotations) {
 		  if (!err) {
 		    return res.send(annotations);
@@ -150,7 +151,7 @@ app.get('/api/search', function (req, res) {
 		});
 	}
 	else {
-	    console.log("No Sidebar: "+ JSON.stringify(req.query));
+	    console.log("Non-sidebar request: "+ JSON.stringify(req.query));
 		query.exec(function (err, annotations) {
 		  if (!err) {
 		    return res.send({'rows': annotations });
@@ -204,12 +205,13 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     quote: req.body.quote,
     tags: req.body.tags,
     groups: req.body.groups,
+    uuid: req.body.uuid,
     ranges: req.body.ranges,
     permissions: req.body.permissions
   });
   annotation.save(function (err) {
     if (!err) {
-      return console.log("created");
+      return console.log("Created annotation with uuid: "+ req.body.uuid);
     } else {
       return console.log(err);
     }
@@ -264,6 +266,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.groups = req.body.groups;
+    annotation.uuid = req.body.uuid;
     annotation.ranges = req.body.ranges;
     annotation.permissions = req.body.permissions;
 
