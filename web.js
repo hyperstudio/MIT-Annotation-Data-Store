@@ -94,6 +94,7 @@ var Annotation = new Schema({
     created: { type: String, default: Date.now() },
     updated: { type: String, default: Date.now() },
     user: { type: String, required: false },
+    username: { type: String, required: false },
     text: { type: String, required: false },         
     quote: { type: String, required: false },    
     uri: { type: String, required: false },
@@ -196,6 +197,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
   console.log(req.body);
   annotation = new AnnotationModel({
     user: req.body.user,
+    username: req.body.username,
     consumer: "annotationstudio.mit.edu",
     annotator_schema_version: req.body.annotator_schema_version,
     created: Date.now(),
@@ -258,6 +260,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation._id = req.body._id;
     annotation.id = req.body._id;
     annotation.user = req.body.user;
+    annotation.username = req.body.username;
     annotation.consumer = req.body.consumer;
     annotation.annotator_schema_version = req.body.annotator_schema_version;
     annotation.updated = Date.now();
