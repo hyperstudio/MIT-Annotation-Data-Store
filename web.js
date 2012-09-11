@@ -1,7 +1,8 @@
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+	moment = require('moment');
 
 var lessMiddleware = require('less-middleware');
 
@@ -91,8 +92,8 @@ var Annotation = new Schema({
 	id: { type: String, required: false },
     consumer: { type: String, default: "annotationstudio" },
     annotator_schema_version: { type: String, required: false, default: "v1.0" },
-    created: { type: String, default: Date.now() },
-    updated: { type: String, default: Date.now() },
+    created: { type: Date, default: Date.now() },
+    updated: { type: Date, default: Date.now() },
     user: { type: String, required: false },
     username: { type: String, required: false },
     text: { type: String, required: false },         
@@ -182,7 +183,11 @@ app.get('/api/annotations', function (req, res) {
 app.get('/api/annotations/:id', function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
-      return res.send(annotation);
+		// var created = moment(annotation.created);
+		// var updated = moment(annotation.updated);
+		// annotation.created = created.format("dddd, MMMM Do YYYY, h:mm:ss a");
+		// annotation.updated = update.format("dddd, MMMM Do YYYY, h:mm:ss a");
+		return res.send(annotation);
     } else {
       return console.log(err);
     }
@@ -263,6 +268,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.username = req.body.username;
     annotation.consumer = req.body.consumer;
     annotation.annotator_schema_version = req.body.annotator_schema_version;
+    annotation.created = req.body.created;
     annotation.updated = Date.now();
     annotation.text = req.body.text;
     annotation.uri = req.body.uri;
