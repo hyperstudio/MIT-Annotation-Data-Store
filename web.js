@@ -1,8 +1,7 @@
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
-    mongoose = require('mongoose'),
-	moment = require('moment');
+    mongoose = require('mongoose');
 
 var lessMiddleware = require('less-middleware');
 
@@ -183,10 +182,6 @@ app.get('/api/annotations', function (req, res) {
 app.get('/api/annotations/:id', function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
-		// var created = moment(annotation.created);
-		// var updated = moment(annotation.updated);
-		// annotation.created = created.format("dddd, MMMM Do YYYY, h:mm:ss a");
-		// annotation.updated = update.format("dddd, MMMM Do YYYY, h:mm:ss a");
 		return res.send(annotation);
     } else {
       return console.log(err);
