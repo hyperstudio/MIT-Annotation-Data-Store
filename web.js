@@ -130,19 +130,19 @@ app.get('/api/search', function (req, res) {
 	// Handle other query parameters, like user, permissions, tags, etc.
 	if (req.query.user) {
 		query.where('user').equals(req.query.user);
-	    console.log("User requested, and matched: "+req.query.user);
+	    // console.log("User requested, and matched: "+req.query.user);
 	}
 
 	if (req.query.groups) {
 		query.where('groups').in(req.query.groups);
-	    console.log("Groups requested, and matched: "+req.query.groups);
+	    // console.log("Groups requested, and matched: "+req.query.groups);
 	}
 
 	// Here's where we handle permissions.
 	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
 
 	if (req.query.sidebar) {
-	    console.log("Sidebar request: "+ JSON.stringify(req.query));
+	    // console.log("Sidebar request: "+ JSON.stringify(req.query));
 		query.exec(function (err, annotations) {
 		  if (!err) {
 		    return res.send(annotations);
@@ -152,7 +152,7 @@ app.get('/api/search', function (req, res) {
 		});
 	}
 	else {
-	    console.log("Non-sidebar request: "+ JSON.stringify(req.query));
+	    // console.log("Non-sidebar request: "+ JSON.stringify(req.query));
 		query.exec(function (err, annotations) {
 		  if (!err) {
 		    return res.send({'rows': annotations });
