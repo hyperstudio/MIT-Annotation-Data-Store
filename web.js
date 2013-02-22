@@ -127,19 +127,23 @@ app.get('/api', function (req, res) {
 app.get('/api/search', function (req, res) {
 	var query = AnnotationModel.find({'uri': req.query.uri }); 
 
-	// Handle other query parameters, like user, permissions, tags, etc.
-	if (req.query.user) {
+	// Handle other query parameters, groups, user, permissions, tags, etc.
+
+	// If a group are included in the request
+	if (req.query.groups) {
+		query.where('groups').in(req.query.groups);
+	    console.log("Groups requested, and matched: "+req.query.groups);
+	}
+	else if (req.query.user) {
 		query.where('user').equals(req.query.user);
 	    // console.log("User requested, and matched: "+req.query.user);
 	}
 
-	if (req.query.groups) {
-		query.where('groups').in(req.query.groups);
-	    // console.log("Groups requested, and matched: "+req.query.groups);
-	}
+	// Handle read permissions.
+	query.where('permissions.read').in([req.query.user, ""]);
+    console.log('req.query.user: '+req.query.user);
 
-	// Here's where we handle permissions.
-	// query.or([{'permissions.read': req.query.user}, {'permissions.read': ""}]);
+    // console.log(query);
 
 	if (req.query.sidebar) {
 	    // console.log("Sidebar request: "+ JSON.stringify(req.query));
