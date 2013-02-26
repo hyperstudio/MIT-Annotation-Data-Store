@@ -59,11 +59,12 @@ SchemaBuffer.prototype.cast = function (value, doc, init) {
     return new MongooseBuffer(value.value(true), [this.path, doc]);
   }
 
-  if ('string' === typeof value || Array.isArray(value)) {
+  var type = typeof value;
+  if ('string' == type || 'number' == type || Array.isArray(value)) {
     return new MongooseBuffer(value, [this.path, doc]);
   }
 
-  throw new CastError('buffer', value);
+  throw new CastError('buffer', value, this.path);
 };
 
 /*!
