@@ -1,3 +1,10 @@
+if(process.env.NODETIME_ACCOUNT_KEY) {
+  require('nodetime').profile({
+    accountKey: process.env.NODETIME_ACCOUNT_KEY,
+    appName: 'My Application Name' // optional
+  });
+}
+
 var application_root = __dirname,
     express = require("express"),
     path = require("path"),
@@ -127,23 +134,16 @@ app.get('/api', function (req, res) {
 app.get('/api/search', function (req, res) {
 	var query = AnnotationModel.find({'uri': req.query.uri }); 
 
-	// Handle other query parameters, groups, user, permissions, tags, etc.
-
-	// If a group are included in the request
-	if (req.query.groups) {
-		query.where('groups').in(req.query.groups);
-	    console.log("Groups requested, and matched: "+req.query.groups);
-	}
-	else if (req.query.user) {
+	if (req.query.mode === 'user') {
 		query.where('user').equals(req.query.user);
-	    // console.log("User requested, and matched: "+req.query.user);
 	}
-
-	// Handle read permissions.
-	query.where('permissions.read').in([req.query.user, ""]);
-    console.log('req.query.user: '+req.query.user);
-
-    // console.log(query);
+	else if (req.query.mode === 'group') {
+    	query.where('groups').in(req.query.groups);
+		query.$where('this.permissions.read.length === 0');
+	}
+	else if (req.query.mode === 'class') {
+		query.$where('this.permissions.read.length === 0');
+	}
 
 	if (req.query.sidebar) {
 	    // console.log("Sidebar request: "+ JSON.stringify(req.query));
@@ -215,6 +215,8 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     ranges: req.body.ranges,
     permissions: req.body.permissions
   });
+  // console.log(annotation.permissions.read);
+
   annotation.save(function (err) {
     if (!err) {
       return console.log("Created annotation with uuid: "+ req.body.uuid);
