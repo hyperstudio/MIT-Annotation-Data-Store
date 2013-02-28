@@ -64,8 +64,12 @@ var allowCrossDomain = function(req, res, next) {
 // database
 // local
 // mongoose.connect('mongodb://localhost/annotationdb');
-// staging
+// live
 mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
+
+// staging
+// mongoose.connect('mongodb://heroku_app6335855:ajc6b1a5f3aqkbv7dlrbebv4t1@ds035607.mongolab.com:35607/heroku_app6335855');
+
 
 // config
 app.configure(function () {
@@ -143,6 +147,9 @@ app.get('/api/search', function (req, res) {
 	}
 	else if (req.query.mode === 'class') {
 		query.$where('this.permissions.read.length === 0');
+	}
+	else if (req.query.mode === 'admin') {
+		// No conditions.
 	}
 
 	if (req.query.sidebar) {
