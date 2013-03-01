@@ -171,7 +171,8 @@ app.get('/api/search', tokenOK, function (req, res) {
 // GET to READ
 // List annotations
 // Auth: Anyone can see all annotations (no check for token)
-app.get('/api/annotations', function (req, res) {
+// Why?
+app.get('/api/annotations', tokenOK, function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
 	if (!err) {
 	  return res.send(annotations);
@@ -183,7 +184,8 @@ app.get('/api/annotations', function (req, res) {
 
 // Single annotation
 // Auth: Anyone can see a single annotation (no check for token)
-app.get('/api/annotations/:id', function (req, res) {
+// Why?
+app.get('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
 		return res.send(annotation);
