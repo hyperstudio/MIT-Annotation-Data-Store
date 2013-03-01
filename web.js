@@ -128,7 +128,7 @@ app.get('/api', function (req, res) {
 
 // Search annotations
 // Auth: Token required to search
-app.get('/api/search', function (req, res) {
+app.get('/api/search', tokenOK, function (req, res) {
 	var query = AnnotationModel.find({'uri': req.query.uri }); 
 
 	if (req.query.mode === 'user') {
