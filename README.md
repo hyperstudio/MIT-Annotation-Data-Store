@@ -8,23 +8,18 @@ of Node on RedHat's OpenShift PaaS.
 Selecting a Node version to install/use
 ---------------------------------------
 
-To select the version of Node.js that you want to run, just edit or add
-a version to the .openshift/markers/NODEJS_VERSION file.
+To select the version of Node.js that you want to run, 
+update the 'engines' section of your app's package.json file.
 
-    Example: To install Node.js version 0.9.1, you can run:
-       $ echo -e "0.9.1\n" >> .openshift/markers/NODEJS_VERSION
+    Example: To install Node.js version 0.8.21, update your package.json file:
+       $ sed -e 's/"node": ".*"/"node": ">= 0.8.21"/' -i package.json
 
 
-The action_hooks in this application will use that NODEJS_VERSION marker
-file to download and extract that Node version if it is available on
-nodejs.org and will automatically set the paths up to use the node/npm
-binaries from that install directory.
+The action_hooks in this app will automatically download, build,
+and install a copy of Node.js that matches the requirements specified in
+your app's package.json file.
 
-     See: .openshift/action_hooks/ for more details.
-
-    Note: The last non-blank line in the .openshift/markers/NODEJS_VERSION
-          file.determines the version it will install.
-
+     See: .openshift/action_hooks/ for more informaiton.
 
 Okay, now onto how can you get a custom Node.js version running
 on OpenShift.
@@ -49,16 +44,16 @@ Add this `github nodejs-custom-version-openshift` repository
     git remote add upstream -m master git://github.com/openshift/nodejs-custom-version-openshift.git
     git pull -s recursive -X theirs upstream master
 
-Optionally, specify the custom version of Node.js you want to run with
-(Default is v0.8.9).
-If you want to more later version of Node (example v0.9.1), you can change
-to that by just writing it to the end of the NODEJS_VERSION file and
-committing that change.
+If you would like to use a more recent version of Node.js (example v0.9.1), just update the 'engines' section of your app's package.json file:
 
-    echo "0.9.1" >> .openshift/markers/NODEJS_VERSION
-    git commit . -m 'use Node version 0.9.1'
+    sed -e 's/"node": ".*"/"node": ">= 0.8.21"/' -i package.json
 
-Then push the repo to OpenShift
+Commit your changes locally:
+
+    git add package.json
+    git commit -m 'updating package.json to select Node.js version 0.8.21'
+
+Then push your updates to OpenShift
 
     git push
 
