@@ -4,11 +4,16 @@
 #
 
 
-#  Returns the configured Node version - defaults to 0.8.9.
+#  Returns the configured Node version
 function get_node_version() {
-   marker="$OPENSHIFT_REPO_DIR/.openshift/markers/NODEJS_VERSION"
-   nodejs_ver=$(egrep -v "^\s*#.*" "$marker" | egrep -v "^\s*$" | tail -1)
-   echo "${nodejs_ver:-"0.8.9"}"
+   # attempt to read the app's package.json file
+   marker="$OPENSHIFT_REPO_DIR/package.json"
+
+   # in order to detect the desired node.js version
+   nodejs_ver=$(grep "\"node\"" "$marker" | tail -n 1 | sed -e 's/^.*" *[~=<>]*[=<>]* *v*\([0-9][^" ]*\) *[^"]*".*$/\1/p;d')
+
+   #default to the latest supported release version (0.6.0).
+   echo "${nodejs_ver:-"0.6.0"}"
 
 }  #  End of function  get_node_version.
 
