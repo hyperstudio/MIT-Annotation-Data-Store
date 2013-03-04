@@ -1,52 +1,44 @@
-Running a custom/latest Node[.js] version on RedHat's OpenShift PaaS
+Node.js on OpenShift
 ====================================================================
-This git repository is a sample Node application along with the
-"orchestration" bits to help you run the latest or a custom version
-of Node on RedHat's OpenShift PaaS.
+This package includes a dynamic Node.js build stage that will provide your application with a customized Node.js runtime.
+The version of Node that is available will depend on the requirements listed in your application's `package.json` file.
 
+See: `.openshift/action_hooks/` for more informaiton on how the OpenShift build process works.
 
-Selecting a Node version to install/use
----------------------------------------
+Basic Setup
+-----------
 
-To select the version of Node.js that you want to run, 
-update the 'engines' section of your app's package.json file.
+If this is your first time using OpenShift Online or Node.js, you'll have some quick prep-work to do:
 
-    Example: To install Node.js version 0.8.21, update your package.json file:
-       $ sed -e 's/"node": ".*"/"node": ">= 0.8.21"/' -i package.json
+1. [Create an OpenShift Online account](http://openshift.redhat.com/app/account/new)
+2. If you don't already have the rhc (Red Hat Cloud) command-line tools, run: `sudo gem install rhc`
+3. Run `rhc setup` to link your OpenShift Online account with your local development environment, and to select an application namespace
+4. [Download and install Node.js](http://nodejs.org) for use in your local development environment: http://nodejs.org
 
+If you need any additional help getting started, these links may come in handy:
 
-The action_hooks in this app will automatically download, build,
-and install a copy of Node.js that matches the requirements specified in
-your app's package.json file.
+ * https://openshift.redhat.com/community/get-started#cli
+ * https://openshift.redhat.com/community/developers/rhc-client-tools-install
 
-     See: .openshift/action_hooks/ for more informaiton.
+Host your Node.js applications on OpenShift
+-------------------------------------------
 
-Okay, now onto how can you get a custom Node.js version running
-on OpenShift.
+Create a Node.js application.  This example will produce an application named **nodeapp**:
 
+    rhc app create nodeapp nodejs --from-code=git://github.com/openshift/nodejs-custom-version-openshift.git
 
-Steps to get a custom Node.js version running on OpenShift
-----------------------------------------------------------
+The above example will output a folder named after your application which contains your local development source.  Make sure to run it from within a directory where you would like to store your development code.
 
-Create an account at http://openshift.redhat.com/
+That's it!  You should be able to access your application at:
 
-Create a namespace, if you haven't already do so
+    http://nodeapp-$yournamespace.rhcloud.com
 
-    rhc domain create <yournamespace>
+If your app requires a specific version of Node.js, just update the 'engines' section of your app's `package.json` file to specify your runtime requirements:
 
-Create a nodejs-0.6 application (you can name it anything via -a)
-
-    rhc app create -a palinode  -t nodejs-0.6
-
-Add this `github nodejs-custom-version-openshift` repository
-
-    cd palinode
-    git remote add upstream -m master git://github.com/openshift/nodejs-custom-version-openshift.git
-    git pull -s recursive -X theirs upstream master
-
-If you would like to use a more recent version of Node.js (example v0.9.1), just update the 'engines' section of your app's package.json file:
-
-    sed -e 's/"node": ".*"/"node": ">= 0.8.21"/' -i package.json
+    "engines": {
+        "node": ">= 0.8.21",
+        "npm": ">= 1.0.0"
+     },
 
 Commit your changes locally:
 
@@ -57,8 +49,4 @@ Then push your updates to OpenShift
 
     git push
 
-That's it, you can now checkout your application at:
-
-    http://palinode-$yournamespace.rhcloud.com
-    ( See env @ http://palinode-$yournamespace.rhcloud.com/env )
-
+Additional updates can be made via the same `git add`, `git commit`, and `git push` workflow.
