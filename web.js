@@ -104,6 +104,7 @@ var Annotation = new Schema({
     uri: { type: String, required: false },
     uuid: { type: String, required: false },
     groups: [String],           
+    subgroups: [String],           
     ranges: [Ranges],
     tags: [String],
     permissions: {
@@ -135,10 +136,11 @@ app.get('/api/search', tokenOK, function (req, res) {
 		query.where('user').equals(req.query.user);
 	}
 	else if (req.query.mode === 'group') {
-    	query.where('groups').in(req.query.groups);
+    	query.where('subgroups').in(req.query.subgroups);
 		query.$where('this.permissions.read.length === 0');
 	}
 	else if (req.query.mode === 'class') {
+    	query.where('groups').in(req.query.groups);
 		query.$where('this.permissions.read.length === 0');
 	}
 	else if (req.query.mode === 'admin') {
@@ -213,6 +215,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     quote: req.body.quote,
     tags: req.body.tags,
     groups: req.body.groups,
+    subgroups: req.body.subgroups,
     uuid: req.body.uuid,
     ranges: req.body.ranges,
     permissions: req.body.permissions
@@ -278,6 +281,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.groups = req.body.groups;
+    annotation.subgroups = req.body.subgroups;
     annotation.uuid = req.body.uuid;
     annotation.ranges = req.body.ranges;
     annotation.permissions = req.body.permissions;
