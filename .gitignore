@@ -3,3 +3,9 @@
 
 # node noise
 # node_modules
+
+# live config
+config.js
+
+# backups
+backups
