@@ -1,16 +1,15 @@
+// Setup
 var application_root = __dirname,
+	config = require("./config"),
     express = require("express"),
     path = require("path"),
-    mongoose = require('mongoose');
-
-var lessMiddleware = require('less-middleware');
-
-var express = require("express");
-var app = express();
+    mongoose = require('mongoose'),
+	lessMiddleware = require('less-middleware'),
+	jwt = require('jwt-simple'),
+	secret = config.secret,
+	app = express();
 
 // Authentication
-var jwt = require('jwt-simple');
-var secret = 'secretgoeshere';
 function tokenOK (req, res, next) {
 	try {
 		var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
@@ -54,15 +53,8 @@ var allowCrossDomain = function(req, res, next) {
     }
 };
 
-// database
-// local
-// mongoose.connect('mongodb://localhost/annotationdb');
-// live
-mongoose.connect('mongodb://heroku_app5176464:1e86dpt7qi3folobb3t63kqrlq@ds033907.mongolab.com:33907/heroku_app5176464');
-
-// staging
-// mongoose.connect('mongodb://heroku_app6335855:ajc6b1a5f3aqkbv7dlrbebv4t1@ds035607.mongolab.com:35607/heroku_app6335855');
-
+// DB
+mongoose.connect(config.mongodb.live);
 
 // config
 app.configure(function () {
@@ -93,8 +85,8 @@ var Ranges = new Schema({
 // Annotation Model
 var Annotation = new Schema({
 	id: { type: String, required: false },
-    consumer: { type: String, default: "annotationstudio" },
-    annotator_schema_version: { type: String, required: false, default: "v1.0" },
+    consumer: { type: String, default: config.consumer },
+    annotator_schema_version: { type: String, required: false, default: config.api.version },
     created: { type: Date, default: Date.now() },
     updated: { type: Date, default: Date.now() },
     user: { type: String, required: false },
