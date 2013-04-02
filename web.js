@@ -1,7 +1,7 @@
 // Setup
 var application_root = __dirname,
 	config = require("./config"),
-    express = require("express"),
+	express = require("express"),
     path = require("path"),
     mongoose = require('mongoose'),
 	lessMiddleware = require('less-middleware'),
@@ -37,6 +37,7 @@ function inWindow (decoded, next) {
  	return ((result > 0) ? true : false);
 }
 
+// CORS
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Expose-Headers', 'Content-Length, Content-Type, Location');
@@ -58,7 +59,6 @@ mongoose.connect(config.mongodb.live);
 
 // config
 app.configure(function () {
-  // app.use(tokenOK);
   app.use(allowCrossDomain);
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -72,9 +72,10 @@ app.configure(function () {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-var Schema = mongoose.Schema; //Schema.ObjectId
+var Schema = mongoose.Schema;
 
 // Schemas
+// Annotator Ranges
 var Ranges = new Schema({
     start: { type: String, required: true },
     end: { type: String, required: true},
@@ -120,7 +121,6 @@ app.get('/api', function (req, res) {
 });
 
 // Search annotations
-// Auth: Token required to search
 app.get('/api/search', tokenOK, function (req, res) {
 	var query = AnnotationModel.find({'uri': req.query.uri }); 
 
@@ -140,7 +140,6 @@ app.get('/api/search', tokenOK, function (req, res) {
 	}
 
 	if (req.query.sidebar) {
-	    // console.log("Sidebar request: "+ JSON.stringify(req.query));
 		query.exec(function (err, annotations) {
 		  if (!err) {
 		    return res.send(annotations);
@@ -150,7 +149,6 @@ app.get('/api/search', tokenOK, function (req, res) {
 		});
 	}
 	else {
-	    // console.log("Non-sidebar request: "+ JSON.stringify(req.query));
 		query.exec(function (err, annotations) {
 		  if (!err) {
 		    return res.send({'rows': annotations });
@@ -159,13 +157,10 @@ app.get('/api/search', tokenOK, function (req, res) {
 		  }
 		});
 	}
-	// if (req.query.permissions[read]) {};
 });
 
 // GET to READ
 // List annotations
-// Auth: Anyone can see all annotations (no check for token)
-// Why?
 app.get('/api/annotations', tokenOK, function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
 	if (!err) {
@@ -177,8 +172,6 @@ app.get('/api/annotations', tokenOK, function (req, res) {
 });
 
 // Single annotation
-// Auth: Anyone can see a single annotation (no check for token)
-// Why?
 app.get('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     if (!err) {
@@ -190,7 +183,6 @@ app.get('/api/annotations/:id', tokenOK, function (req, res) {
 });
 
 // POST to CREATE
-// Auth: Token required to post an annotation
 app.post('/api/annotations', tokenOK, function (req, res) {
   var annotation;
   console.log("POST: ");
@@ -212,7 +204,6 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     ranges: req.body.ranges,
     permissions: req.body.permissions
   });
-  // console.log(annotation.permissions.read);
 
   annotation.save(function (err) {
     if (!err) {
@@ -226,38 +217,7 @@ app.post('/api/annotations', tokenOK, function (req, res) {
 });
 
 // PUT to UPDATE
-// Bulk update: we won't really be doing this will we?
-// Auth: Token required to update all annotations
-// Permissions: users can update only their own annotations (handled by annotator)
-app.put('/api/annotations', tokenOK, function (req, res) {
-    var i, len = 0;
-    console.log("is Array req.body.annotations");
-    console.log(Array.isArray(req.body.annotations));
-    console.log("PUT: (annotations)");
-    console.log(req.body.annotations);
-    if (Array.isArray(req.body.annotations)) {
-        len = req.body.annotations.length;
-    }
-    for (i = 0; i < len; i++) {
-        console.log("UPDATE annotation by id:");
-        for (var id in req.body.annotations[i]) {
-            console.log(id);
-        }
-        AnnotationModel.update({ "_id": id }, req.body.annotations[i][id], function (err, numAffected) {
-            if (err) {
-                console.log("Error on update");
-                console.log(err);
-            } else {
-                console.log("updated num: " + numAffected);
-            }
-        });
-    }
-    return res.send(req.body.annotations);
-});
-
-// Single update: This is much more likely
-// Auth: Token required to update one annotation
-// Permissions: users can update only their own annotations (handled by annotator)
+// Single update
 app.put('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     annotation._id = req.body._id;
@@ -290,25 +250,7 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
 });
 
 // DELETE to DESTROY
-// Bulk destroy all annotations
-// Auth: Token required to delete all annotations
-// NOTE: Can't think of a good use case -- commenting out. jF 09/06/2010
-// Permissions: user can delete only own annotations (handled by annotator)
-// app.delete('/api/annotations', tokenOK, function (req, res) {
-//   AnnotationModel.remove(function (err) {
-//     if (!err) {
-//       console.log("removed");
-//       return res.send('');
-//     } else {
-//       console.log(err);
-//     }
-//   });
-// });
-
-
 // Remove a single annotation
-// Auth: Token required to delete one annotation
-// Permissions: user can delete only own annotations (handled by annotator)
 app.delete('/api/annotations/:id', tokenOK, function (req, res) {
   return AnnotationModel.findById(req.params.id, function (err, annotation) {
     return annotation.remove(function (err) {
