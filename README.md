@@ -1,19 +1,13 @@
-##  Margin Walker
-MIT Hyperstudio Data Store for Annotation Studio
+#  MIT Annotation Data Store
+Data Store and RESTful web API for Annotation Studio, compatible with OKFN Annotator. See: https://github.com/okfn/annotator
 
 ##  Derivation
-### Based on this great tutorial by Bill Heaton
-http://pixelhandler.com/blog/2012/02/09/develop-a-restful-api-using-node-js-with-express-and-mongoose/
-
-### Will eventually be an alternative to annotator-store
+### An alternative to OKFN annotator-store
 https://github.com/okfn/annotator-store
 
 ## Dependencies
 ### OKFN Annotator
 https://github.com/okfn/annotator/
-
-### Backbone
-http://backbone.js
 
 ### NodeJS
 http://nodejs.org
@@ -27,14 +21,24 @@ http://mongoosejs.com
 ### MongoDB
 http://www.mongodb.org
 
-## Heroku Installation
-http://heroku.com
+## Other
+See package.json
+
+## Installation
+```mkdir annotation-api```
+```cd annotation-api```
+```git clone git@github.com:hyperstudio/annotation-api.git```
+```npm install```
+```foreman start```
+
+Configure, set up OKFN annotator, with this API as the storage endpoint.
 
 ## Author
-- Jamie Folsom
-- MIT HyperStudio
+- Lab: MIT HyperStudio
 - http://hyperstudio.mit.edu/
+- Developer: Jamie Folsom
 - jfolsom@mit.edu
 
 ## License
-&copy; MIT 2012
+GPL2
+&copy; MIT 2013
