@@ -6,7 +6,6 @@
     "express": "3.1.1",
     "less-middleware": "0.1.6",
     "mongoose": "3.6.4",
-    "timekit": "0.1.9",
     "v8tools": "0.2.2"
   },
   "engines": {
