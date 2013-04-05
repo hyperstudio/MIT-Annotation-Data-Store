@@ -1,6 +1,6 @@
 {
   "name": "MIT-Annotation-Data-Store",
-  "version": "1.0",
+  "version": "1.0.0",
   "dependencies": {
     "jwt-simple": "0.1.0",
     "express": "3.1.1",
