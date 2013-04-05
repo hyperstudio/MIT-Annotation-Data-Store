@@ -11,7 +11,7 @@ V8tools - V8 CPU Profiler Binding
 
 `var v8tools = require('v8tools');`
 
-`v8tools.afterGC(v8tools.afterGC(function(gcType, gcFlags, usedHeapSize) {})` - calls the callback after garbage collection cycle.
+`v8tools.afterGC(function(gcType, gcFlags, usedHeapSize) {})` - calls the callback after garbage collection cycle.
 
 `v8tools.startV8Profiler()` - starts V8 CPU profiler
 

@@ -1,14 +1,16 @@
 // Setup
 var application_root = __dirname,
-    config = require("./config"),
-    express = require("express"),
+	secret = process.env.SECRET,
+	port = process.env.PORT,
+	live_db = process.env.LIVE_DB,
+	consumer = process.env.CONSUMER,
+	version = process.env.VERSION,
     path = require("path"),
     mongoose = require('mongoose'),
     lessMiddleware = require('less-middleware'),
     jwt = require('jwt-simple'),
-    secret = config.secret,
-    app = express(),
-    port = config.port;
+    express = require("express"),
+    app = express();
 
 // CORS
 var allowCrossDomain = function(req, res, next) {
@@ -41,8 +43,7 @@ var Ranges = new Schema({
 // Annotation Model
 var Annotation = new Schema({
     id: { type: String, required: false },
-    consumer: { type: String, default: config.consumer },
-    annotator_schema_version: { type: String, required: false, default: config.api.version },
+    annotator_schema_version: { type: String, required: false, default: version },
     created: { type: Date, default: Date.now() },
     updated: { type: Date, default: Date.now() },
     user: { type: String, required: false },
@@ -66,7 +67,7 @@ var Annotation = new Schema({
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // DB
-mongoose.connect(config.mongodb.live);
+mongoose.connect(live_db);
 
 // config
 app.configure(function () {
@@ -239,11 +240,6 @@ app.delete('/api/annotations/:id', tokenOK, function (req, res) {
   });
 });
 
-// launch server
-app.listen(port, function() {
-  console.log("Listening on " + port);
-});
-
 // Authentication
 function tokenOK (req, res, next) {
     try {
@@ -271,3 +267,8 @@ function inWindow (decoded, next) {
     var result = (ttl - diff); console.log("Time left on token: about " + Math.floor(result/(60*60)) + " hours.");
     return ((result > 0) ? true : false);
 }
+
+// launch server
+app.listen(port, function() {
+  console.log("Listening on " + port);
+});

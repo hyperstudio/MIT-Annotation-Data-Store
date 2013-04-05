@@ -76,7 +76,7 @@ static void GCEpilogue(GCType gc_type, GCCallbackFlags gc_callback_flags) {
 
   baton->used_heap_size = GetUsedHeapSize();
 
-  uv_queue_work(uv_default_loop(), &baton->request, Noop, GCEpilogueAsync);
+  uv_queue_work(uv_default_loop(), &baton->request, Noop, (uv_after_work_cb)GCEpilogueAsync);
 }
 
 
