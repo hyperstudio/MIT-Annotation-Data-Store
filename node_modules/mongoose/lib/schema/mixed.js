@@ -4,7 +4,6 @@
  */
 
 var SchemaType = require('../schematype');
-var utils = require('../utils');
 
 /**
  * Mixed SchemaType constructor.
@@ -16,19 +15,12 @@ var utils = require('../utils');
  */
 
 function Mixed (path, options) {
-  if (options && options.default) {
-    var def = options.default;
-    if (Array.isArray(def) && 0 === def.length) {
-      // make sure empty array defaults are handled
-      options.default = Array;
-    } else if (!options.shared &&
-               utils.isObject(def) &&
-               0 === Object.keys(def).length) {
-      // prevent odd "shared" objects between documents
-      options.default = function () {
-        return {}
-      }
-    }
+  // make sure empty array defaults are handled
+  if (options &&
+      options.default &&
+      Array.isArray(options.default) &&
+      0 === options.default.length) {
+    options.default = Array;
   }
 
   SchemaType.call(this, path, options);
