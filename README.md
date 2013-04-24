@@ -22,16 +22,10 @@ http://mongoosejs.com
 http://www.mongodb.org
 
 ## Other
-See package.json
+See package.json (NOTE: you will need the versions of node and npm specified in that package file).
 
 ## Installation
-```mkdir annotation-api```
-```cd annotation-api```
-```git clone git@github.com:hyperstudio/annotation-api.git```
-```npm install```
-```foreman start```
-
-Configure, set up OKFN annotator, with this API as the storage endpoint.
+See https://github.com/hyperstudio/MIT-Annotation-Data-Store/wiki/Installation
 
 ## Author
 - Lab: MIT HyperStudio
