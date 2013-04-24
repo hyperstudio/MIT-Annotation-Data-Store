@@ -2,10 +2,11 @@
 .DS_Store
 
 # node noise
-# node_modules
+node_modules
 
 # live config
 config.js
+.env
 
 # backups
 backups
