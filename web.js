@@ -40,6 +40,16 @@ var Ranges = new Schema({
     endOffset: { type: Number, required: false }
 });
 
+var Shape = new Schema({
+    type: { type: String, required: true },
+    geometry: {
+      x: { type: Number, required: true },
+      y: { type: Number, required: true },
+      width: { type: Number, required: true },
+      height: { type: Number, required: true } 
+    }
+});
+
 // Annotation Model
 var Annotation = new Schema({
     id: { type: String, required: false },
@@ -51,6 +61,8 @@ var Annotation = new Schema({
     text: { type: String, required: false },        
     quote: { type: String, required: false },    
     uri: { type: String, required: false },
+    src: { type: String, required: false },
+    shapes: [Shape],
     uuid: { type: String, required: false },
     groups: [String],         
     subgroups: [String],         
@@ -173,12 +185,14 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     updated: Date.now(),
     text: req.body.text,
     uri: req.body.uri,
+    src: req.body.src,
     quote: req.body.quote,
     tags: req.body.tags,
     groups: req.body.groups,
     subgroups: req.body.subgroups,
     uuid: req.body.uuid,
     ranges: req.body.ranges,
+    shapes: req.body.shapes,
     permissions: req.body.permissions
   });
 
