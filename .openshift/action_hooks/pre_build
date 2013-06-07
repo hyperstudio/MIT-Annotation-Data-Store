@@ -18,4 +18,3 @@ ensure_node_is_installed
 #  npm version to install the dependencies.
 mv  "${OPENSHIFT_REPO_DIR}/package.json"  "$(get_node_tmp_dir)"
 
-

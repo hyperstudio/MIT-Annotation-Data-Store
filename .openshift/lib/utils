@@ -7,18 +7,18 @@
 #  Returns the configured Node version
 function get_node_version() {
    # read the app's package.json file
-   package_json="$OPENSHIFT_REPO_DIR/package.json"
+   package_json="${OPENSHIFT_REPO_DIR}/package.json"
 
    # attempt to detect the desired node.js version
    engine=$(grep "\"node\"" "$package_json" | tail -n 1 | sed -e 's/^.*" *[~=<>]*[=<>]* *v*\([0-9][^" ]*\) *[^"]*".*$/\1/p;d')
 
    # assume that a deprecated marker value is a reasonable default
-   marker="$OPENSHIFT_REPO_DIR/.openshift/markers/NODEJS_VERSION"
-   marker_ver=$(egrep -v "^\s*#.*" "$marker" | egrep -v "^\s*$" | tail -1)
+   marker="${OPENSHIFT_REPO_DIR}.openshift/markers/NODEJS_VERSION"
+   marker_ver=$(egrep -v "^\s*#.*" "$marker" 2>/dev/null | egrep -v "^\s*$" | tail -1)
    
-   # use the OpenShift cart default of 0.6.0 as a final option:
+   # use the OpenShift cart default of 0.6.20 as a final option:
    if [ -z $engine ]; then
-       echo ${marker_ver-"0.6.0"}
+       echo ${marker_ver-"0.6.20"}
    else
        echo ${engine}
    fi
