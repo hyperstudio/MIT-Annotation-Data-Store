@@ -5,21 +5,19 @@ Data Store and RESTful web API for Annotation Studio, compatible with OKFN Annot
 ### An alternative to OKFN annotator-store
 https://github.com/okfn/annotator-store
 
+## Setup
+### Using Heroku
++ Create a heroku app `heroku apps:create $appname`
++ Add the Heroku add-on MongoLab `heroku addons:add mongolab`
++ Get MongoLab configuration settings `heroku config:pull`
++ Edit the file named `.env` replace the word `MONGOLAB_URI` with `DB`
++ Tell Heroku about your environment:
+
+    ```heroku config:add `cat .env` ```
+
 ## Dependencies
 ### OKFN Annotator
 https://github.com/okfn/annotator/
-
-### NodeJS
-http://nodejs.org
-
-### Express
-http://expressjs.com
-
-### Mongoose
-http://mongoosejs.com
-
-### MongoDB
-http://www.mongodb.org
 
 ## Other
 See package.json (NOTE: you will need the versions of node and npm specified in that package file).
