@@ -113,15 +113,15 @@ app.get('/api', function (req, res) {
 // Search annotations
 app.get('/api/search', tokenOK, function (req, res) {
 	var query;
-	
-	console.log("req.query.context: " + req.query.context);
+	var re = new RegExp(req.query.host, 'i');
 
     switch (req.query.context) {
     case 'document':
     	query = AnnotationModel.find({'uri': req.query.uri }); 
         break;
     case 'dashboard':
-    	query = AnnotationModel.find({'user': req.query.user }); 
+    	query = AnnotationModel.find({'user': req.query.user}); 
+		query.where('uri').regex(re);
         break;
     }
 
@@ -140,7 +140,7 @@ app.get('/api/search', tokenOK, function (req, res) {
 	case 'admin':
 		break;
     }
-
+	
 	//console.log("this: " + this.);
 
     if (req.query.sidebar || req.query.context == "dashboard") {
