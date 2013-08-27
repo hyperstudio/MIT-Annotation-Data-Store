@@ -6,6 +6,7 @@
     "express": "3.1.0",
     "less-middleware": "0.1.6",
     "mongoose": "3.5.7",
+    "underscore": "1.4.4",
     "timekit": "0.1.9",
     "nodetime": "0.8.10",
     "v8tools": "0.2.1"

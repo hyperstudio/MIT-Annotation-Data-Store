@@ -3,10 +3,12 @@ var application_root = __dirname,
 	secret = process.env.SECRET,
 	port = process.env.PORT,
 	live_db = process.env.LIVE_DB,
+	dev_db = process.env.DEV_DB,
 	consumer = process.env.CONSUMER,
 	version = process.env.VERSION,
     path = require("path"),
     mongoose = require('mongoose'),
+    underscore = require('underscore'),
     lessMiddleware = require('less-middleware'),
     jwt = require('jwt-simple'),
     express = require("express"),
@@ -40,6 +42,17 @@ var Ranges = new Schema({
     endOffset: { type: Number, required: false }
 });
 
+// Annotation Ranges
+var Shapes = new Schema({
+	type: String,
+	geometry: {
+		height: String,
+		width: String,
+		x: String,
+		y: String
+	}
+});
+
 // Annotation Model
 var Annotation = new Schema({
     id: { type: String, required: false },
@@ -50,6 +63,8 @@ var Annotation = new Schema({
     username: { type: String, required: false },
     text: { type: String, required: false },        
     quote: { type: String, required: false },    
+    shapes: [Shapes],    
+    url: { type: String, required: false },
     uri: { type: String, required: false },
     uuid: { type: String, required: false },
     groups: [String],         
@@ -67,7 +82,7 @@ var Annotation = new Schema({
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // DB
-mongoose.connect(live_db);
+mongoose.connect(dev_db);
 
 // config
 app.configure(function () {
@@ -96,17 +111,30 @@ app.get('/api', function (req, res) {
 
 // Search annotations
 app.get('/api/search', tokenOK, function (req, res) {
-    var query = AnnotationModel.find({'uri': req.query.uri }); 
+	var query;
+	
+	console.log("req.query.context: " + req.query.context);
+
+    switch (req.query.context) {
+    case 'document':
+    	query = AnnotationModel.find({'uri': req.query.uri }); 
+        break;
+    case 'dashboard':
+    	query = AnnotationModel.find({'user': req.query.user }); 
+        break;
+    }
 
     switch (req.query.mode) {
     case 'user':
         query.where('user').equals(req.query.user);
         break;
     case 'group':
-		query.where('subgroups').in(req.query.subgroups).$where('this.permissions.read.length < 1');
+		query.where('subgroups').in(req.query.subgroups);
+		// query.$where('this.permissions.read.length < 1');
         break;
     case 'class':
-		query.where('groups').in(req.query.groups).$where('this.permissions.read.length < 1');
+		query.where('groups').in(req.query.groups);
+		// query.$where('this.permissions.read.length < 1');
 		break;
 	case 'admin':
 		break;
@@ -114,7 +142,7 @@ app.get('/api/search', tokenOK, function (req, res) {
 
 	//console.log("this: " + this.);
 
-    if (req.query.sidebar) {
+    if (req.query.sidebar || req.query.context == "dashboard") {
 	    query.exec(function (err, annotations) {
 			if (!err) {
 				return res.send(annotations);
@@ -174,6 +202,8 @@ app.post('/api/annotations', tokenOK, function (req, res) {
     text: req.body.text,
     uri: req.body.uri,
     quote: req.body.quote,
+    shapes: req.body.shapes,    
+    uri: req.body.url,
     tags: req.body.tags,
     groups: req.body.groups,
     subgroups: req.body.subgroups,
@@ -207,6 +237,8 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.updated = Date.now();
     annotation.text = req.body.text;
     annotation.uri = req.body.uri;
+    annotation.url = req.body.url;
+    annotation.shapes = req.body.shapes;
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.groups = req.body.groups;
@@ -232,7 +264,7 @@ app.delete('/api/annotations/:id', tokenOK, function (req, res) {
     return annotation.remove(function (err) {
      if (!err) {
        console.log("removed");
-       return res.send('');
+       return res.send(204, 'Successfully deleted annotation.');
      } else {
        console.log(err);
      }
