@@ -4,6 +4,7 @@ var application_root = __dirname,
 	port = process.env.PORT,
 	live_db = process.env.LIVE_DB,
 	dev_db = process.env.DEV_DB,
+	db = process.env.DB,
 	consumer = process.env.CONSUMER,
 	version = process.env.VERSION,
     path = require("path"),
@@ -82,7 +83,7 @@ var Annotation = new Schema({
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // DB
-mongoose.connect(dev_db);
+mongoose.connect(db);
 
 // config
 app.configure(function () {
