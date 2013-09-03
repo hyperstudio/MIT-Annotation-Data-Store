@@ -1,3 +1,4 @@
+#!/bin/env node
 // Setup
 var application_root = __dirname,
 	secret = process.env.SECRET,
