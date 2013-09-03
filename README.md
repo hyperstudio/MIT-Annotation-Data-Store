@@ -15,6 +15,10 @@ https://github.com/okfn/annotator-store
 
     ```heroku config:add `cat .env` ```
 
+### Using OpenShift
+
+    rhc app create APP_NAME nodejs mongodb-2.2 --env SECRET=YOUR_SECRET_KEY CONSUMER=YOUR_CONSUMER_KEY --from-code=https://github.com/ryanj/MIT-Annotation-Data-Store.git
+
 ## Dependencies
 ### OKFN Annotator
 https://github.com/okfn/annotator/

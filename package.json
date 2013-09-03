@@ -13,5 +13,9 @@
   "engines": {
     "node": "0.8.19",
     "npm": "1.2.10"
-  }
+  },
+  "scripts": {
+    "start": "node web.js"
+  },
+  "main": "web.js"
 }
