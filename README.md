@@ -17,7 +17,12 @@ https://github.com/okfn/annotator-store
 
 ### Using OpenShift
 
-    rhc app create APP_NAME nodejs mongodb-2.2 --env SECRET=YOUR_SECRET_KEY CONSUMER=YOUR_CONSUMER_KEY --from-code=https://github.com/ryanj/MIT-Annotation-Data-Store.git
+    rhc app create APP_NAME nodejs mongodb-2.2 --env SECRET=YOUR_SECRET_KEY --env CONSUMER=YOUR_CONSUMER_KEY --from-code=https://github.com/ryanj/MIT-Annotation-Data-Store.git
+
+To update application secrets and keys after the initial build:
+
+    rhc env set CONSUMER=YOUR_CONSUMER_KEY -a APP_NAME
+    rhc app restart -a APP_NAME
 
 ## Dependencies
 ### OKFN Annotator
