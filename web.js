@@ -120,9 +120,13 @@ app.get('/api/search', tokenOK, function (req, res) {
     	query = AnnotationModel.find({'uri': req.query.uri }); 
         break;
     case 'dashboard':
-    	query = AnnotationModel.find({'user': req.query.user}); 
+		query = AnnotationModel.find({'user': req.query.user}); 
 		query.where('uri').regex(re);
-        break;
+		break;
+   	case 'search': // only limit to current host, allow searching on any user, document, etc.
+		query = AnnotationModel.find(); 
+		query.where('uri').regex(re);
+		break;
     }
 
     switch (req.query.mode) {
@@ -143,7 +147,7 @@ app.get('/api/search', tokenOK, function (req, res) {
 	
 	//console.log("this: " + this.);
 
-    if (req.query.sidebar || req.query.context == "dashboard") {
+    if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search" ) {
 	    query.exec(function (err, annotations) {
 			if (!err) {
 				return res.send(annotations);
