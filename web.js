@@ -1,9 +1,11 @@
+#!/bin/env node
 // Setup
 var application_root = __dirname,
 	secret = process.env.SECRET,
-	port = process.env.PORT,
-	db = process.env.DB,
 	consumer = process.env.CONSUMER,
+	port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+	host = process.env.HOST || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+	db = process.env.DB || process.env.OPENSHIFT_MONGODB_DB_URL,
 	version = process.env.VERSION,
     path = require("path"),
     mongoose = require('mongoose'),
@@ -283,6 +285,6 @@ function inWindow (decoded, next) {
 }
 
 // launch server
-app.listen(port, function() {
+app.listen(port, host, function() {
   console.log("Listening on " + port);
 });
