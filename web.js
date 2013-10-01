@@ -108,25 +108,42 @@ app.get('/api', function (req, res) {
 
 // Search annotations
 app.get('/api/search', tokenOK, function (req, res) {
-    var query = AnnotationModel.find({'uri': req.query.uri }); 
+	var query;
+	var re = new RegExp(req.query.host, 'i');
+
+    switch (req.query.context) {
+    case 'document':
+    	query = AnnotationModel.find({'uri': req.query.uri }); 
+        break;
+    case 'dashboard':
+		query = AnnotationModel.find({'user': req.query.user}); 
+		query.where('uri').regex(re);
+		break;
+   	case 'search': // only limit to current host, allow searching on any user, document, etc.
+		query = AnnotationModel.find(); 
+		query.where('uri').regex(re);
+		break;
+    }
 
     switch (req.query.mode) {
     case 'user':
         query.where('user').equals(req.query.user);
         break;
     case 'group':
-		query.where('subgroups').in(req.query.subgroups).$where('this.permissions.read.length < 1');
+		query.where('subgroups').in(req.query.subgroups);
+		// query.$where('this.permissions.read.length < 1');
         break;
     case 'class':
-		query.where('groups').in(req.query.groups).$where('this.permissions.read.length < 1');
+		query.where('groups').in(req.query.groups);
+		// query.$where('this.permissions.read.length < 1');
 		break;
 	case 'admin':
 		break;
     }
-
+	
 	//console.log("this: " + this.);
 
-    if (req.query.sidebar) {
+    if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search" ) {
 	    query.exec(function (err, annotations) {
 			if (!err) {
 				return res.send(annotations);
@@ -221,6 +238,8 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.updated = Date.now();
     annotation.text = req.body.text;
     annotation.uri = req.body.uri;
+    annotation.url = req.body.url;
+    annotation.shapes = req.body.shapes;
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.groups = req.body.groups;
@@ -246,7 +265,7 @@ app.delete('/api/annotations/:id', tokenOK, function (req, res) {
     return annotation.remove(function (err) {
      if (!err) {
        console.log("removed");
-       return res.send('');
+       return res.send(204, 'Successfully deleted annotation.');
      } else {
        console.log(err);
      }
