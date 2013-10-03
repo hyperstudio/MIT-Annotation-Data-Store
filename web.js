@@ -151,7 +151,7 @@ app.get('/api/search', tokenOK, function (req, res) {
           return res.send(annotations);
         }
         else {
-          return res.send(204, 'No annotation matched.');
+          return res.send(["{}"]);
         }
 			} 
 			else {
@@ -167,7 +167,7 @@ app.get('/api/search', tokenOK, function (req, res) {
           return res.send({'rows': annotations });
         }
         else {
-          return res.send(204, 'No annotation matched.');
+          return res.send({'rows': ["{}"] });
         }
 			} 
 			else {
