@@ -118,7 +118,6 @@ app.get('/api/search', tokenOK, function (req, res) {
     case 'dashboard':
 		  query = AnnotationModel.find({'user': req.query.user}); 
 	   	query.where('uri').regex(re);
-      // query.limit(req.query.limit);
 		  break;
    	case 'search': // only limit to current host, allow searching on any user, document, etc.
 		  query = AnnotationModel.find(); 
@@ -128,26 +127,32 @@ app.get('/api/search', tokenOK, function (req, res) {
 
     switch (req.query.mode) {
     case 'user':
-        query.where('user').equals(req.query.user);
-        break;
+      query.where('user').equals(req.query.user);
+      break;
     case 'group':
-		query.where('subgroups').in(req.query.subgroups);
-		// query.$where('this.permissions.read.length < 1');
-        break;
+      query.where('subgroups').in(req.query.subgroups);
+      query.$where('this.permissions.read.length < 1');
+      break;
     case 'class':
-		query.where('groups').in(req.query.groups);
-		// query.$where('this.permissions.read.length < 1');
-		break;
-	case 'admin':
-		break;
+      query.where('groups').in(req.query.groups);
+      query.$where('this.permissions.read.length < 1');
+      break;
+  	case 'admin':
+  		break;
     }
 	
-	//console.log("this: " + this.);
+    query.limit(req.query.limit);
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search" ) {
 	    query.exec(function (err, annotations) {
 			if (!err) {
-				return res.send(annotations);
+        // console.info(annotations);
+        if (annotations.length > 0) {
+          return res.send(annotations);
+        }
+        else {
+          return res.send(204, 'No annotation matched.');
+        }
 			} 
 			else {
 				return console.log(err);
@@ -156,8 +161,14 @@ app.get('/api/search', tokenOK, function (req, res) {
     }
     else {
 		query.exec(function (err, annotations) {
-		    if (!err) {
-				return res.send({'rows': annotations });
+	    if (!err) {
+        // console.info(annotations);
+        if (annotations.length > 0) {
+          return res.send({'rows': annotations });
+        }
+        else {
+          return res.send(204, 'No annotation matched.');
+        }
 			} 
 			else {
 				return console.log(err);
@@ -166,7 +177,6 @@ app.get('/api/search', tokenOK, function (req, res) {
     }
 });
 
-// GET to READ
 // List annotations
 app.get('/api/annotations', tokenOK, function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
