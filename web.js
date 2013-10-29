@@ -108,28 +108,52 @@ app.get('/api', function (req, res) {
 
 // Search annotations
 app.get('/api/search', tokenOK, function (req, res) {
-    var query = AnnotationModel.find({'uri': req.query.uri }); 
+	var query;
+	var re = new RegExp(req.query.host, 'i');
+  console.info(req.query);
+
+
+    switch (req.query.context) {
+    case 'document':
+      query = AnnotationModel.find({'uri': req.query.uri }); 
+      break;
+    case 'dashboard':
+		  query = AnnotationModel.find({'user': req.query.user}); 
+	   	query.where('uri').regex(re);
+		  break;
+   	case 'search': // only limit to current host, allow searching on any user, document, etc.
+		  query = AnnotationModel.find(); 
+		  query.where('uri').regex(re);
+		  break;
+    }
 
     switch (req.query.mode) {
     case 'user':
-        query.where('user').equals(req.query.user);
-        break;
+      query.where('user').equals(req.query.user);
+      break;
     case 'group':
-		query.where('subgroups').in(req.query.subgroups).$where('this.permissions.read.length < 1');
-        break;
+      query.where('subgroups').in(req.query.subgroups);
+      query.$where('this.permissions.read.length < 1');
+      break;
     case 'class':
-		query.where('groups').in(req.query.groups).$where('this.permissions.read.length < 1');
-		break;
-	case 'admin':
-		break;
+      query.where('groups').in(req.query.groups);
+      query.$where('this.permissions.read.length < 1');
+      break;
+  	case 'admin':
+  		break;
     }
+	
+    query.limit(req.query.limit);
 
-	//console.log("this: " + this.);
-
-    if (req.query.sidebar) {
+    if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search" ) {
 	    query.exec(function (err, annotations) {
 			if (!err) {
-				return res.send(annotations);
+        if (annotations.length > 0) {
+          return res.send(annotations);
+        }
+        else {
+          return res.send(204, 'Successfully deleted annotation.');
+        }
 			} 
 			else {
 				return console.log(err);
@@ -138,8 +162,14 @@ app.get('/api/search', tokenOK, function (req, res) {
     }
     else {
 		query.exec(function (err, annotations) {
-		    if (!err) {
-				return res.send({'rows': annotations });
+	    if (!err) {
+        // console.info(annotations);
+        if (annotations.length > 0) {
+          return res.send({'rows': annotations });
+        }
+        else {
+          return res.send(204, 'Successfully deleted annotation.');
+        }
 			} 
 			else {
 				return console.log(err);
@@ -148,7 +178,6 @@ app.get('/api/search', tokenOK, function (req, res) {
     }
 });
 
-// GET to READ
 // List annotations
 app.get('/api/annotations', tokenOK, function (req, res) {
   return AnnotationModel.find(function (err, annotations) {
@@ -221,6 +250,8 @@ app.put('/api/annotations/:id', tokenOK, function (req, res) {
     annotation.updated = Date.now();
     annotation.text = req.body.text;
     annotation.uri = req.body.uri;
+    annotation.url = req.body.url;
+    annotation.shapes = req.body.shapes;
     annotation.quote = req.body.quote;
     annotation.tags = req.body.tags;
     annotation.groups = req.body.groups;
@@ -246,7 +277,7 @@ app.delete('/api/annotations/:id', tokenOK, function (req, res) {
     return annotation.remove(function (err) {
      if (!err) {
        console.log("removed");
-       return res.send('');
+       return res.send(204, 'Successfully deleted annotation.');
      } else {
        console.log(err);
      }
@@ -257,18 +288,19 @@ app.delete('/api/annotations/:id', tokenOK, function (req, res) {
 // Authentication
 function tokenOK (req, res, next) {
     try {
-    var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
-    if (inWindow(decoded)) {
-       console.log("Token in time window");
+      var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
+      if (inWindow(decoded)) {
+         console.log("Token in time window");
+      } 
+      else {
+         console.log("Token not in in time window.");
+      } 
+      next();
     } 
-    else {
-       console.log("Token not in in time window.");
-    } 
-    next();
-    } catch (err) {
-       console.log("Error decoding token:");
-    console.log(err);
-    return res.send("There was a problem with your authentication token");
+    catch (err) {
+      console.log("Error decoding token:");
+      console.log(err);
+      return res.send("There was a problem with your authentication token");
     }
 };
 
