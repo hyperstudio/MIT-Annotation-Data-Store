@@ -5,12 +5,12 @@ var application_root = __dirname,
 	db = process.env.DB,
 	consumer = process.env.CONSUMER,
 	version = process.env.VERSION,
-    path = require("path"),
-    mongoose = require('mongoose'),
-    lessMiddleware = require('less-middleware'),
-    jwt = require('jwt-simple'),
-    express = require("express"),
-    app = express();
+  path = require("path"),
+  mongoose = require('mongoose'),
+  lessMiddleware = require('less-middleware'),
+  jwt = require('jwt-simple'),
+  express = require("express"),
+  app = express();
 
 // CORS
 var allowCrossDomain = function(req, res, next) {
@@ -46,7 +46,7 @@ var Shape = new Schema({
       x: { type: Number, required: true },
       y: { type: Number, required: true },
       width: { type: Number, required: true },
-      height: { type: Number, required: true } 
+      height: { type: Number, required: true }
     }
 });
 
@@ -58,14 +58,14 @@ var Annotation = new Schema({
     updated: { type: Date, default: Date.now() },
     user: { type: String, required: false },
     username: { type: String, required: false },
-    text: { type: String, required: false },        
-    quote: { type: String, required: false },    
+    text: { type: String, required: false },
+    quote: { type: String, required: false },
     uri: { type: String, required: false },
     src: { type: String, required: false },
     shapes: [Shape],
     uuid: { type: String, required: false },
-    groups: [String],         
-    subgroups: [String],         
+    groups: [String],
+    subgroups: [String],
     ranges: [Ranges],
     tags: [String],
     permissions: {
@@ -110,19 +110,16 @@ app.get('/api', function (req, res) {
 app.get('/api/search', tokenOK, function (req, res) {
 	var query;
 	var re = new RegExp(req.query.host, 'i');
-  console.info(req.query);
-
-
     switch (req.query.context) {
     case 'document':
-      query = AnnotationModel.find({'uri': req.query.uri }); 
+      query = AnnotationModel.find({'uri': req.query.uri });
       break;
     case 'dashboard':
-		  query = AnnotationModel.find({'user': req.query.user}); 
+		  query = AnnotationModel.find();
 	   	query.where('uri').regex(re);
 		  break;
    	case 'search': // only limit to current host, allow searching on any user, document, etc.
-		  query = AnnotationModel.find(); 
+		  query = AnnotationModel.find();
 		  query.where('uri').regex(re);
 		  break;
     }
@@ -142,7 +139,7 @@ app.get('/api/search', tokenOK, function (req, res) {
   	case 'admin':
   		break;
     }
-	
+
     query.limit(req.query.limit);
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search" ) {
@@ -154,7 +151,7 @@ app.get('/api/search', tokenOK, function (req, res) {
         else {
           return res.send(204, 'Successfully deleted annotation.');
         }
-			} 
+			}
 			else {
 				return console.log(err);
 			}
@@ -170,7 +167,7 @@ app.get('/api/search', tokenOK, function (req, res) {
         else {
           return res.send(204, 'Successfully deleted annotation.');
         }
-			} 
+			}
 			else {
 				return console.log(err);
 			}
@@ -291,12 +288,12 @@ function tokenOK (req, res, next) {
       var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
       if (inWindow(decoded)) {
          console.log("Token in time window");
-      } 
+      }
       else {
          console.log("Token not in in time window.");
-      } 
+      }
       next();
-    } 
+    }
     catch (err) {
       console.log("Error decoding token:");
       console.log(err);
@@ -305,11 +302,11 @@ function tokenOK (req, res, next) {
 };
 
 function inWindow (decoded, next) {
-    var issuedAt = decoded.issuedAt; 
-    var ttl = decoded.ttl; 
-    var issuedSeconds = new Date(issuedAt) / 1000; 
-    var nowSeconds = new Date().getTime() / 1000;    
-    var diff = ((nowSeconds - issuedSeconds)); 
+    var issuedAt = decoded.issuedAt;
+    var ttl = decoded.ttl;
+    var issuedSeconds = new Date(issuedAt) / 1000;
+    var nowSeconds = new Date().getTime() / 1000;
+    var diff = ((nowSeconds - issuedSeconds));
     var result = (ttl - diff); console.log("Time left on token: about " + Math.floor(result/(60*60)) + " hours.");
     return ((result > 0) ? true : false);
 }
