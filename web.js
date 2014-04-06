@@ -31,7 +31,7 @@ var allowCrossDomain = function(req, res, next) {
 // Schemas
 var Schema = mongoose.Schema;
 
-// Annotation Ranges
+// Annotation
 var Ranges = new Schema({
     start: {
         type: String,
@@ -50,6 +50,32 @@ var Ranges = new Schema({
         required: false
     }
 });
+
+var rangeTime = new Schema({
+    start: {
+        type: Number,
+        required: true
+    },
+    end: {
+        type: Number,
+        required: true
+    }
+});
+
+var target = new Schema({
+    container: {
+        type: String,
+        required: true
+    },
+    ext: {
+        type: String,
+        required: true
+    },
+    src: {
+        type: String,
+        required: true
+    }
+})
 
 var Shape = new Schema({
     type: {
@@ -127,6 +153,8 @@ var Annotation = new Schema({
     groups: [String],
     subgroups: [String],
     ranges: [Ranges],
+    rangeTime: [rangeTime],
+    target: [target],
     tags: [String],
     permissions: {
         read: [String],
@@ -280,6 +308,8 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         subgroups: req.body.subgroups,
         uuid: req.body.uuid,
         ranges: req.body.ranges,
+        rangeTime: req.body.rangeTime,
+        target: req.body.target,
         shapes: req.body.shapes,
         permissions: req.body.permissions
     });
@@ -317,6 +347,8 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.subgroups = req.body.subgroups;
         annotation.uuid = req.body.uuid;
         annotation.ranges = req.body.ranges;
+        annotation.rangeTime = req.body.rangeTime;
+        annotation.target = req.body.target;
         annotation.permissions = req.body.permissions;
 
         return annotation.save(function(err) {
