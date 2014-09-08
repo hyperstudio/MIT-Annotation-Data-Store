@@ -124,6 +124,10 @@ var Annotation = new Schema({
         type: String,
         required: false
     },
+    parentIndex: {
+        type: String,
+        required: false
+    },
     groups: [String],
     subgroups: [String],
     ranges: [Ranges],
@@ -279,6 +283,7 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         groups: req.body.groups,
         subgroups: req.body.subgroups,
         uuid: req.body.uuid,
+        parentIndex: req.body.parentIndex,
         ranges: req.body.ranges,
         shapes: req.body.shapes,
         permissions: req.body.permissions
@@ -316,6 +321,7 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.groups = req.body.groups;
         annotation.subgroups = req.body.subgroups;
         annotation.uuid = req.body.uuid;
+        annotation.parentIndex = req.body.parentIndex;
         annotation.ranges = req.body.ranges;
         annotation.permissions = req.body.permissions;
 
