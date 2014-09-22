@@ -252,7 +252,7 @@ app.get('/api/public', function(req, res) {
     // Translate this into a proper query.
     query = AnnotationModel.find();
     query.where('user').equals(req.query.user);
-    query.where('uri').regex(re); // this will get all the annotations from this host.
+    query.where('uri').regex(new RegExp(slug, "i"));
     query.limit(req.query.limit);
     query.exec(function(err, annotations) {
       if (!err) {
