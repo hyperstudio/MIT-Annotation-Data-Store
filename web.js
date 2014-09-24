@@ -178,19 +178,26 @@ app.get('/api/search', tokenOK, function(req, res) {
     var query;
     var re = new RegExp(req.query.host, 'i');
     switch (req.query.context) {
-        case 'document':
-            query = AnnotationModel.find({
-                'uri': req.query.uri
-            });
-            break;
-        case 'dashboard':
-            query = AnnotationModel.find();
-            query.where('uri').regex(re);
-            break;
-        case 'search': // only limit to current host, allow searching on any user, document, etc.
-            query = AnnotationModel.find();
-            query.where('uri').regex(re);
-            break;
+      case 'document':
+        query = AnnotationModel.find({
+          'uri': req.query.uri
+        });
+        break;
+      case 'dashboard':
+        query = AnnotationModel.find();
+        query.where('uri').regex(re);
+        break;
+      case 'public':
+        query = AnnotationModel.find();
+        var pattern = new RegExp("\/public\/(.+)$", 'i');
+        var match = pattern.exec(req.query.uri);
+        var slug = match[1];
+        query.where('uri').regex(new RegExp(slug, "i"));
+        break;
+      case 'search':
+        query = AnnotationModel.find();
+        query.where('uri').regex(re);
+        break;
     }
 
     switch (req.query.mode) {
@@ -212,32 +219,37 @@ app.get('/api/search', tokenOK, function(req, res) {
     query.limit(req.query.limit);
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search") {
-        query.exec(function(err, annotations) {
-            if (!err) {
-                if (annotations.length > 0) {
-                    return res.send(annotations);
-                } else {
-                    return res.send(204, 'Successfully deleted annotation.');
-                }
-            } else {
-                return console.log(err);
-            }
-        });
-    } else {
-        query.exec(function(err, annotations) {
-            if (!err) {
-                // console.info(annotations);
-                if (annotations.length > 0) {
-                    return res.send({
-                        'rows': annotations
-                    });
-                } else {
-                    return res.send(204, 'Successfully deleted annotation.');
-                }
-            } else {
-                return console.log(err);
-            }
-        });
+      query.exec(function(err, annotations) {
+        if (!err) {
+          if (annotations.length > 0) {
+            return res.send(annotations);
+          }
+          else {
+            return res.send(204, 'Successfully deleted annotation.');
+          }
+        }
+        else {
+          return console.log(err);
+        }
+      });
+    }
+    else {
+      query.exec(function(err, annotations) {
+        if (!err) {
+          // console.info(annotations);
+          if (annotations.length > 0) {
+            return res.send({
+              'rows': annotations
+            });
+          }
+          else {
+            return res.send(204, 'Successfully deleted annotation.');
+          }
+        }
+        else {
+          return console.log(err);
+        }
+      });
     }
 });
 
@@ -248,6 +260,7 @@ app.get('/api/public', function(req, res) {
     var pattern = new RegExp("\/documents\/(.+)$", 'i');
     var match = pattern.exec(req.query.uri);
     var slug = match[1];
+    console.log("Slug: " + slug);
 
     // Translate this into a proper query.
     query = AnnotationModel.find();
@@ -380,6 +393,10 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
 
 // Authentication
 function tokenOK(req, res, next) {
+  if (req.query.context === 'public') {
+    return true;
+  }
+  else {
     try {
         var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
         if (inWindow(decoded)) {
@@ -393,6 +410,7 @@ function tokenOK(req, res, next) {
         console.log(err);
         return res.send("There was a problem with your authentication token");
     }
+  }
 };
 
 function inWindow(decoded, next) {
