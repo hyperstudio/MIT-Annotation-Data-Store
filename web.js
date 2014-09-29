@@ -253,34 +253,6 @@ app.get('/api/search', tokenOK, function(req, res) {
     }
 });
 
-// Search annotations
-app.get('/api/public', function(req, res) {
-    var query;
-
-    var pattern = new RegExp("\/documents\/(.+)$", 'i');
-    var match = pattern.exec(req.query.uri);
-    var slug = match[1];
-    console.log("Slug: " + slug);
-
-    // Translate this into a proper query.
-    query = AnnotationModel.find();
-    query.where('user').equals(req.query.user);
-    query.where('uri').regex(new RegExp(slug, "i"));
-    query.limit(req.query.limit);
-    query.exec(function(err, annotations) {
-      if (!err) {
-        if (annotations.length > 0) {
-          return res.send(annotations);
-        }
-        else {
-          return res.send(204, 'No annotations matched that query.');
-        }
-      } else {
-        return console.log(err);
-      }
-    });
-});
-
 
 // List annotations
 app.get('/api/annotations', tokenOK, function(req, res) {
@@ -393,10 +365,6 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
 
 // Authentication
 function tokenOK(req, res, next) {
-  if (req.query.context === 'public') {
-    return true;
-  }
-  else {
     try {
         var decoded = jwt.decode(req.header('x-annotator-auth-token'), secret);
         if (inWindow(decoded)) {
@@ -410,7 +378,6 @@ function tokenOK(req, res, next) {
         console.log(err);
         return res.send("There was a problem with your authentication token");
     }
-  }
 };
 
 function inWindow(decoded, next) {
