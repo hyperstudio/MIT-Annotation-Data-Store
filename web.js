@@ -216,6 +216,10 @@ app.get('/api/search', tokenOK, function(req, res) {
             break;
     }
 
+    if (req.query.tags) {
+        query.where('tags'). in (req.query.tags.split(/[\s,]+/));
+    }
+
     query.limit(req.query.limit);
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search") {
