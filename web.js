@@ -185,7 +185,7 @@ app.get('/api/search', tokenOK, function(req, res) {
     switch (req.query.context) {
       case 'document':
         query = AnnotationModel.find({
-          'uri': req.query.uri
+          'uri': req.query.uri.replace(/\/$/, '')
         });
         break;
       case 'dashboard':
@@ -195,7 +195,7 @@ app.get('/api/search', tokenOK, function(req, res) {
       case 'public':
         query = AnnotationModel.find();
         var pattern = new RegExp("\/public\/(.+)$", 'i');
-        var match = pattern.exec(req.query.uri);
+        var match = pattern.exec(req.query.uri.replace(/\/$/, ''));
         var slug = match[1];
         query.where('uri').regex(new RegExp(slug, "i"));
         break;
