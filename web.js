@@ -202,6 +202,9 @@ app.get('/api/search', tokenOK, function(req, res) {
       case 'search':
         query = AnnotationModel.find();
         query.where('uri').regex(re);
+        if (req.query.uri) {
+            query.where('uri').equals(req.query.uri);
+        }
         break;
     }
 
