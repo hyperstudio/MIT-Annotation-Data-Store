@@ -138,7 +138,11 @@ var Annotation = new Schema({
         update: [String],
         delete: [String]
     },
-    annotation_categories: [Number]
+    annotation_categories: [Number],
+    sort_position: {
+      type: String,
+      required: false
+    }
 });
 
 var AnnotationModel = mongoose.model('Annotation', Annotation);
@@ -305,7 +309,8 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         ranges: req.body.ranges,
         shapes: req.body.shapes,
         permissions: req.body.permissions,
-        annotation_categories: req.body.annotation_categories
+        annotation_categories: req.body.annotation_categories,
+        sort_position: req.body.sort_position
     });
 
     annotation.save(function(err) {
@@ -317,6 +322,13 @@ app.post('/api/annotations', tokenOK, function(req, res) {
     });
     annotation.id = annotation._id;
     return res.send(annotation);
+});
+
+app.post('/api/annotations/positions', tokenOK, function(req, res) {
+    for(annotation_id in req.body.sort_positions) {
+        AnnotationModel.update({ uuid: annotation_id }, { $set: { sort_position: req.body.sort_positions[annotation_id] }}, function() { });
+    }
+    res.send('Positions have been updated');
 });
 
 // PUT to UPDATE
@@ -344,6 +356,7 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.ranges = req.body.ranges;
         annotation.permissions = req.body.permissions;
         annotation.annotation_categories = req.body.annotation_categories;
+        annotation.sort_position = req.body.sort_position;
 
         return annotation.save(function(err) {
             if (!err) {
