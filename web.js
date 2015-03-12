@@ -137,7 +137,8 @@ var Annotation = new Schema({
         admin: [String],
         update: [String],
         delete: [String]
-    }
+    },
+    annotation_categories: [Number]
 });
 
 var AnnotationModel = mongoose.model('Annotation', Annotation);
@@ -303,7 +304,8 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         parentIndex: req.body.parentIndex,
         ranges: req.body.ranges,
         shapes: req.body.shapes,
-        permissions: req.body.permissions
+        permissions: req.body.permissions,
+        annotation_categories: req.body.annotation_categories
     });
 
     annotation.save(function(err) {
@@ -341,6 +343,7 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.parentIndex = req.body.parentIndex;
         annotation.ranges = req.body.ranges;
         annotation.permissions = req.body.permissions;
+        annotation.annotation_categories = req.body.annotation_categories;
 
         return annotation.save(function(err) {
             if (!err) {
