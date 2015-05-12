@@ -3,7 +3,7 @@ Data Store and RESTful web API for Annotation Studio, compatible with OKFN Annot
 
 ##  Derivation
 ### An alternative to OKFN annotator-store
-https://github.com/okfn/annotator-store
+https://github.com/openannotation/annotator-store
 
 ## Setup
 ### Using Heroku
@@ -16,8 +16,8 @@ https://github.com/okfn/annotator-store
     ```heroku config:add `cat .env` ```
 
 ## Dependencies
-### OKFN Annotator
-https://github.com/okfn/annotator/
+### [Annotator](http://annotatorjs.org/)
+https://github.com/openannotation/annotator/
 
 ## Other
 See package.json (NOTE: you will need the versions of node and npm specified in that package file).
