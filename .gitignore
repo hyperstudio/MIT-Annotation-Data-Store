@@ -9,6 +9,8 @@ config.js
 .env
 
 # backups
-backups/
+_backups/
 
 *.rej
+
+*.log
