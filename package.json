@@ -5,8 +5,7 @@
     "jwt-simple": "0.1.0",
     "express": "3.4.4",
     "less-middleware": "0.1.12",
-    "mongoose": "4.1.9",
-    "v8tools": "0.2.2"
+    "mongoose": "4.1.9"
   },
   "engines": {
     "node": "0.10.21",
