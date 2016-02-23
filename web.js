@@ -137,6 +137,11 @@ var Annotation = new Schema({
         admin: [String],
         update: [String],
         delete: [String]
+    },
+    annotation_categories: [Number],
+    sort_position: {
+      type: String,
+      required: false
     }
 });
 
@@ -222,6 +227,9 @@ app.get('/api/search', tokenOK, function(req, res) {
     if (req.query.tags) {
         query.where('tags'). in (req.query.tags.split(/[\s,]+/));
     }
+    if (req.query.annotation_categories) {
+        query.where('annotation_categories'). in (req.query.annotation_categories);
+    }
 
     query.limit(req.query.limit);
 
@@ -306,7 +314,9 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         parentIndex: req.body.parentIndex,
         ranges: req.body.ranges,
         shapes: req.body.shapes,
-        permissions: req.body.permissions
+        permissions: req.body.permissions,
+        annotation_categories: req.body.annotation_categories,
+        sort_position: req.body.sort_position
     });
 
     annotation.save(function(err) {
@@ -318,6 +328,13 @@ app.post('/api/annotations', tokenOK, function(req, res) {
     });
     annotation.id = annotation._id;
     return res.send(annotation);
+});
+
+app.post('/api/annotations/positions', tokenOK, function(req, res) {
+    for(annotation_id in req.body.sort_positions) {
+        AnnotationModel.update({ uuid: annotation_id }, { $set: { sort_position: req.body.sort_positions[annotation_id] }}, function() { });
+    }
+    res.send('Positions have been updated');
 });
 
 // PUT to UPDATE
@@ -344,6 +361,8 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.parentIndex = req.body.parentIndex;
         annotation.ranges = req.body.ranges;
         annotation.permissions = req.body.permissions;
+        annotation.annotation_categories = req.body.annotation_categories;
+        annotation.sort_position = req.body.sort_position;
 
         return annotation.save(function(err) {
             if (!err) {
