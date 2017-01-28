@@ -205,6 +205,11 @@ app.get('/api/search', tokenOK, function(req, res) {
         if (req.query.uri) {
             query.where('uri').equals(req.query.uri);
         }
+      default:
+        query = AnnotationModel.find();
+        if (req.query.uri) {
+            query.where('uri').equals(req.query.uri);
+        }
         break;
     }
 
@@ -251,15 +256,10 @@ app.get('/api/search', tokenOK, function(req, res) {
     else {
       query.exec(function(err, annotations) {
         if (!err) {
-          // console.info(annotations);
-          if (annotations.length > 0) {
+          console.info(annotations);
             return res.send({
               'rows': annotations
             });
-          }
-          else {
-            return res.send(204, 'Successfully deleted annotation.');
-          }
         }
         else {
           return console.log(err);
@@ -407,8 +407,8 @@ function tokenOK(req, res, next) {
 };
 
 function inWindow(decoded, next) {
-    var issuedAt = decoded.issuedAt;
-    var ttl = decoded.ttl;
+    var issuedAt = decoded.iat;
+    var ttl = decoded.exp;
     var issuedSeconds = new Date(issuedAt) / 1000;
     var nowSeconds = new Date().getTime() / 1000;
     var diff = ((nowSeconds - issuedSeconds));
