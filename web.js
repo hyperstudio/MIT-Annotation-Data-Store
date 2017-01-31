@@ -145,6 +145,8 @@ var Annotation = new Schema({
     }
 });
 
+Annotation.index({uri: 1});
+
 var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // DB
