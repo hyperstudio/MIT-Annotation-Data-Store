@@ -174,7 +174,7 @@ app.get('/api', function(req, res) {
 // Search annotations
 app.get('/api/search', tokenOK, function(req, res) {
     var query;
-    var re = new RegExp(req.query.hostname, 'i');
+    var re = new RegExp(req.query.host, 'i');
     switch (req.query.context) {
       case 'document':
         query = AnnotationModel.find({
