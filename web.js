@@ -10,6 +10,8 @@ var application_root = __dirname,
     lessMiddleware = require('less-middleware'),
     jwt = require('jwt-simple'),
     express = require("express"),
+    methodOverride = require('method-override'),
+    errorhandler = require('errorhandler'),
     app = express();
 
 // CORS
@@ -150,23 +152,14 @@ var AnnotationModel = mongoose.model('Annotation', Annotation);
 // DB
 mongoose.connect(db);
 
-// config
-app.configure(function() {
-    app.use(allowCrossDomain);
-    app.use(express.bodyParser());
-    app.use(express.methodOverride());
-    app.use(app.router);
-    app.use(lessMiddleware({
-        src: __dirname + '/public',
-        compress: true
-    }));
+// Middleware config
+app.use(allowCrossDomain);
+app.use(express.urlencoded({
+  extended: true
+}));
+app.use(express.json());
+app.use(methodOverride());
 
-    app.use(express.static(path.join(application_root, "public")));
-    app.use(express.errorHandler({
-        dumpExceptions: true,
-        showStack: true
-    }));
-});
 
 Annotation.pre('save', function(next) {
     this.id = this._id;
@@ -181,7 +174,7 @@ app.get('/api', function(req, res) {
 // Search annotations
 app.get('/api/search', tokenOK, function(req, res) {
     var query;
-    var re = new RegExp(req.query.host, 'i');
+    var re = new RegExp(req.query.hostname, 'i');
     switch (req.query.context) {
       case 'document':
         query = AnnotationModel.find({
@@ -388,6 +381,19 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
         });
     });
 });
+
+// Middleware config
+app.use(lessMiddleware(__dirname + '/public', {
+  render:{
+    compress: true
+  }
+}));
+
+app.use(express.static(path.join(application_root, "public")));
+app.use(errorhandler({
+    dumpExceptions: true,
+    showStack: true
+}));
 
 // Authentication
 function tokenOK(req, res, next) {
