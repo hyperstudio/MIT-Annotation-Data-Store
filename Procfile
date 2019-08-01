@@ -1,1 +1,1 @@
-web: node web.js
+web: C:\ProgramData\nvm\v9.0.0\node64.exe web.js

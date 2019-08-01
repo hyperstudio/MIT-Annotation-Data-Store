@@ -12,6 +12,8 @@ var application_root = __dirname,
     express = require("express"),
     app = express();
 
+console.log(db);
+
 // CORS
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -187,7 +189,11 @@ app.get('/api/search', tokenOK, function(req, res) {
         query = AnnotationModel.find({
           'uri': req.query.uri.replace(/\/$/, '')
         });
+
+        //just see user's own annotation:
+        //query.where('user').equals(req.query.user)
         break;
+
       case 'dashboard':
         query = AnnotationModel.find();
         query.where('uri').regex(re);
@@ -221,6 +227,13 @@ app.get('/api/search', tokenOK, function(req, res) {
             query.$where('this.permissions.read.length < 1');
             break;
         case 'admin':
+            // possible fix for admins seeing private annos: 
+            query.$where('this.permissions.read.length < 1');
+            break;
+        // for annotations search by other users: 
+        case 'userSearch':
+            query.where('user').equals(req.query.user);
+            query.$where('this.permissions.read.length < 1');
             break;
     }
 
