@@ -214,6 +214,7 @@ app.get('/api/search', tokenOK, function(req, res) {
             query.$where('this.permissions.read.length < 1');
             break;
         case 'admin':
+            query.$where('this.permissions.read.length < 1');
             break;
     }
 
