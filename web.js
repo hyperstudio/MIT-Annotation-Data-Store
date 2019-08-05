@@ -216,6 +216,11 @@ app.get('/api/search', tokenOK, function(req, res) {
         case 'admin':
             query.$where('this.permissions.read.length < 1');
             break;
+        // for annotations search by other users:
+        case 'userSearch':
+            query.where('user').equals(req.query.user);
+            query.$where('this.permissions.read.length < 1');
+            break;
     }
 
     if (req.query.tags) {
