@@ -206,7 +206,12 @@ app.get('/api/search', tokenOK, function(req, res) {
             query.where('user').equals(req.query.user);
             break;
         case 'group':
-            query.where('subgroups'). in (req.query.subgroups);
+            if(req.query.subgroups){
+              query.where('subgroups'). in (req.query.subgroups);
+            }
+            else{
+              query.where('subgroups'). in ([]);
+            }
             query.$where('this.permissions.read.length < 1');
             break;
         case 'class':
