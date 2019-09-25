@@ -207,7 +207,10 @@ app.get('/api/search', tokenOK, function(req, res) {
             break;
         case 'group':
             if(req.query.subgroups){
-              query.where('subgroups'). in (req.query.subgroups);
+              var clean_subgroups = req.query.subgroups;
+              var index = clean_subgroups.indexOf("");
+              if(index > -1) clean_subgroups.splice(index, 1);
+              query.where('subgroups'). in (clean_subgroups);
             }
             else{
               query.where('subgroups'). in ([]);
@@ -215,7 +218,15 @@ app.get('/api/search', tokenOK, function(req, res) {
             query.$where('this.permissions.read.length < 1');
             break;
         case 'class':
-            query.where('groups'). in (req.query.groups);
+            if(req.query.groups){
+              var clean_groups = req.query.groups;
+              var index = clean_groups.indexOf("");
+              if(index > -1) clean_groups.splice(index, 1);
+              query.where('groups'). in (clean_groups);
+            }
+            else{
+              query.where('groups'). in ([]);
+            }
             query.$where('this.permissions.read.length < 1');
             break;
         case 'admin':
