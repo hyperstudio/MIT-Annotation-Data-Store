@@ -175,7 +175,10 @@ app.get('/api', function(req, res) {
 app.get('/api/search', tokenOK, function(req, res) {
     var query;
     var re = new RegExp(req.query.host, 'i');
-    var exd = req.query.uri.replace('https://','').replace('http://','').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    var exd = req.query.uri;
+    if(req.query.uri) {
+      exd = req.query.uri.replace('https://','').replace('http://','').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
     switch (req.query.context) {
       case 'document':
         query = AnnotationModel.find({
