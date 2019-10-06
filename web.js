@@ -175,10 +175,14 @@ app.get('/api', function(req, res) {
 app.get('/api/search', tokenOK, function(req, res) {
     var query;
     var re = new RegExp(req.query.host, 'i');
+    var exd = req.query.uri;
+    if(req.query.uri) {
+      exd = req.query.uri.replace('https://','').replace('http://','').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
     switch (req.query.context) {
       case 'document':
         query = AnnotationModel.find({
-          'uri': req.query.uri.replace(/\/$/, '')
+          'uri': {$regex: exd, $options:"i"}
         });
         break;
       case 'dashboard':
@@ -196,7 +200,7 @@ app.get('/api/search', tokenOK, function(req, res) {
         query = AnnotationModel.find();
         query.where('uri').regex(re);
         if (req.query.uri) {
-            query.where('uri').equals(req.query.uri);
+            query.where('uri').regex(new RegExp(exd,'i'));
         }
         break;
     }
