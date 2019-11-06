@@ -7,7 +7,7 @@
     "jwt-simple": "^0.5.6",
     "less-middleware": "3.1.0",
     "method-override": "^3.0.0",
-    "mongoose": "4.1.9"
+    "mongoose": "5.7.5"
   },
   "engines": {
     "node": "8.16.0",
