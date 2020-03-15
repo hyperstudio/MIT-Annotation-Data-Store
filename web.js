@@ -144,6 +144,30 @@ var Annotation = new Schema({
     sort_position: {
       type: String,
       required: false
+    },
+    doc_title: {
+      type: String,
+      required: false
+    },
+    doc_author: {
+      type: String,
+      required: false
+    },
+    doc_date: {
+      type: String,
+      required: false
+    },
+    doc_publisher: {
+      type: String,
+      required: false
+    },
+    doc_edition: {
+      type: String,
+      required: false
+    },
+    doc_source: {
+      type: String,
+      required: false
     }
 });
 
@@ -267,7 +291,6 @@ app.get('/api/search', tokenOK, function(req, res) {
     else {
       query.exec(function(err, annotations) {
         if (!err) {
-          // console.info(annotations);
           if (annotations.length > 0) {
             return res.send({
               'rows': annotations
@@ -332,7 +355,13 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         shapes: req.body.shapes,
         permissions: req.body.permissions,
         annotation_categories: req.body.annotation_categories,
-        sort_position: req.body.sort_position
+        sort_position: req.body.sort_position,
+        doc_title: req.body.doc_title,
+        doc_author: req.body.doc_author,
+        doc_date: req.body.doc_date,
+        doc_publisher: req.body.doc_publisher,
+        doc_edition: req.body.doc_edition,
+        doc_source: req.body.doc_source
     });
 
     annotation.save(function(err) {
@@ -379,6 +408,12 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.permissions = req.body.permissions;
         annotation.annotation_categories = req.body.annotation_categories;
         annotation.sort_position = req.body.sort_position;
+        annotation.doc_title = req.body.doc_title;
+        annotation.doc_author = req.body.doc_author;
+        annotation.doc_date = req.body.doc_date;
+        annotation.doc_publisher = req.body.doc_publisher;
+        annotation.doc_edition = req.body.doc_edition;
+        annotation.doc_source = req.body.doc_source;
 
         return annotation.save(function(err) {
             if (!err) {
