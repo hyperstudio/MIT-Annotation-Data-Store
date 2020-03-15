@@ -131,7 +131,7 @@ var Annotation = new Schema({
         required: false
     },
     groups: [String],
-    subgroups: [String],
+    group_ids: [Number],
     ranges: [Ranges],
     tags: [String],
     permissions: {
@@ -209,18 +209,6 @@ app.get('/api/search', tokenOK, function(req, res) {
         case 'user':
             query.where('user').equals(req.query.user);
             break;
-        case 'group':
-            if(req.query.subgroups){
-              var clean_subgroups = req.query.subgroups;
-              var index = clean_subgroups.indexOf("");
-              if(index > -1) clean_subgroups.splice(index, 1);
-              query.where('subgroups'). in (clean_subgroups);
-            }
-            else{
-              query.where('subgroups'). in ([]);
-            }
-            query.$where('this.permissions.read.length < 1');
-            break;
         case 'class':
             if(req.query.groups){
               var clean_groups = req.query.groups;
@@ -230,6 +218,15 @@ app.get('/api/search', tokenOK, function(req, res) {
             }
             else{
               query.where('groups'). in ([]);
+            }
+            query.$where('this.permissions.read.length < 1');
+            break;
+        case 'groupId':
+            if(req.query.group_ids){
+                query.where('group_ids'). in (req.query.group_ids);
+            }
+            else{
+                query.where('group_ids'). in ([]);
             }
             query.$where('this.permissions.read.length < 1');
             break;
@@ -328,7 +325,7 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         quote: req.body.quote,
         tags: req.body.tags,
         groups: req.body.groups,
-        subgroups: req.body.subgroups,
+        group_ids: req.body.group_ids,
         uuid: req.body.uuid,
         parentIndex: req.body.parentIndex,
         ranges: req.body.ranges,
@@ -375,7 +372,7 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.quote = req.body.quote;
         annotation.tags = req.body.tags;
         annotation.groups = req.body.groups;
-        annotation.subgroups = req.body.subgroups;
+        annotation.group_ids = req.body.group_ids;
         annotation.uuid = req.body.uuid;
         annotation.parentIndex = req.body.parentIndex;
         annotation.ranges = req.body.ranges;
