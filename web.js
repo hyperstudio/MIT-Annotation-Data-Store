@@ -1,8 +1,19 @@
 // Setup
+
+const uriFormat = require('mongodb-uri')
+function encodeMongoURI (urlString) {
+    if (urlString) {
+      let parsed = uriFormat.parse(urlString)
+      urlString = uriFormat.format(parsed);
+    }
+    return urlString;
+};
+
+
 var application_root = __dirname,
     secret = process.env.SECRET,
     port = process.env.PORT,
-    db = process.env.DB,
+    db = encodeMongoURI(process.env.DB),
     consumer = process.env.CONSUMER,
     version = process.env.VERSION,
     path = require("path"),
@@ -29,6 +40,7 @@ var allowCrossDomain = function(req, res, next) {
         next();
     }
 };
+
 
 // Schemas
 var Schema = mongoose.Schema;
@@ -171,8 +183,6 @@ var Annotation = new Schema({
     }
 });
 
-var AnnotationModel = mongoose.model('Annotation', Annotation);
-
 // DB
 mongoose.connect(db);
 
@@ -183,12 +193,26 @@ app.use(express.urlencoded({
 }));
 app.use(express.json());
 app.use(methodOverride());
-
+app.use(lessMiddleware(__dirname + '/public', {
+    render:{
+      compress: true
+    }
+  }));
+  
+  app.use(express.static(path.join(application_root, "public")));
+  app.use(errorhandler({
+      dumpExceptions: true,
+      showStack: true
+  }));
+  
 
 Annotation.pre('save', function(next) {
     this.id = this._id;
     next();
 });
+
+var AnnotationModel = mongoose.model('Annotation', Annotation);
+
 
 // ROUTES
 app.get('/api', function(req, res) {
@@ -440,18 +464,6 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
     });
 });
 
-// Middleware config
-app.use(lessMiddleware(__dirname + '/public', {
-  render:{
-    compress: true
-  }
-}));
-
-app.use(express.static(path.join(application_root, "public")));
-app.use(errorhandler({
-    dumpExceptions: true,
-    showStack: true
-}));
 
 // Authentication
 function tokenOK(req, res, next) {

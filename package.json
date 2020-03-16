@@ -1,5 +1,5 @@
 {
-  "name": "MIT-Annotation-Data-Store",
+  "name": "mit-annotation-data-store",
   "version": "0.1.6",
   "dependencies": {
     "errorhandler": "^1.5.1",
