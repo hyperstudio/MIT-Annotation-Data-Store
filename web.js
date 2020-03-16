@@ -1,8 +1,19 @@
 // Setup
+
+const uriFormat = require('mongodb-uri')
+function encodeMongoURI (urlString) {
+    if (urlString) {
+      let parsed = uriFormat.parse(urlString)
+      urlString = uriFormat.format(parsed);
+    }
+    return urlString;
+};
+
+
 var application_root = __dirname,
     secret = process.env.SECRET,
     port = process.env.PORT,
-    db = process.env.DB,
+    db = encodeMongoURI(process.env.DB),
     consumer = process.env.CONSUMER,
     version = process.env.VERSION,
     path = require("path"),
@@ -29,6 +40,7 @@ var allowCrossDomain = function(req, res, next) {
         next();
     }
 };
+
 
 // Schemas
 var Schema = mongoose.Schema;
@@ -131,7 +143,7 @@ var Annotation = new Schema({
         required: false
     },
     groups: [String],
-    subgroups: [String],
+    group_ids: [Number],
     ranges: [Ranges],
     tags: [String],
     permissions: {
@@ -144,10 +156,32 @@ var Annotation = new Schema({
     sort_position: {
       type: String,
       required: false
+    },
+    doc_title: {
+      type: String,
+      required: false
+    },
+    doc_author: {
+      type: String,
+      required: false
+    },
+    doc_date: {
+      type: String,
+      required: false
+    },
+    doc_publisher: {
+      type: String,
+      required: false
+    },
+    doc_edition: {
+      type: String,
+      required: false
+    },
+    doc_source: {
+      type: String,
+      required: false
     }
 });
-
-var AnnotationModel = mongoose.model('Annotation', Annotation);
 
 // DB
 mongoose.connect(db);
@@ -159,12 +193,26 @@ app.use(express.urlencoded({
 }));
 app.use(express.json());
 app.use(methodOverride());
-
+app.use(lessMiddleware(__dirname + '/public', {
+    render:{
+      compress: true
+    }
+  }));
+  
+  app.use(express.static(path.join(application_root, "public")));
+  app.use(errorhandler({
+      dumpExceptions: true,
+      showStack: true
+  }));
+  
 
 Annotation.pre('save', function(next) {
     this.id = this._id;
     next();
 });
+
+var AnnotationModel = mongoose.model('Annotation', Annotation);
+
 
 // ROUTES
 app.get('/api', function(req, res) {
@@ -209,18 +257,6 @@ app.get('/api/search', tokenOK, function(req, res) {
         case 'user':
             query.where('user').equals(req.query.user);
             break;
-        case 'group':
-            if(req.query.subgroups){
-              var clean_subgroups = req.query.subgroups;
-              var index = clean_subgroups.indexOf("");
-              if(index > -1) clean_subgroups.splice(index, 1);
-              query.where('subgroups'). in (clean_subgroups);
-            }
-            else{
-              query.where('subgroups'). in ([]);
-            }
-            query.$where('this.permissions.read.length < 1');
-            break;
         case 'class':
             if(req.query.groups){
               var clean_groups = req.query.groups;
@@ -230,6 +266,15 @@ app.get('/api/search', tokenOK, function(req, res) {
             }
             else{
               query.where('groups'). in ([]);
+            }
+            query.$where('this.permissions.read.length < 1');
+            break;
+        case 'groupId':
+            if(req.query.group_ids){
+                query.where('group_ids'). in (req.query.group_ids);
+            }
+            else{
+                query.where('group_ids'). in ([]);
             }
             query.$where('this.permissions.read.length < 1');
             break;
@@ -270,7 +315,6 @@ app.get('/api/search', tokenOK, function(req, res) {
     else {
       query.exec(function(err, annotations) {
         if (!err) {
-          // console.info(annotations);
           if (annotations.length > 0) {
             return res.send({
               'rows': annotations
@@ -328,14 +372,20 @@ app.post('/api/annotations', tokenOK, function(req, res) {
         quote: req.body.quote,
         tags: req.body.tags,
         groups: req.body.groups,
-        subgroups: req.body.subgroups,
+        group_ids: req.body.group_ids,
         uuid: req.body.uuid,
         parentIndex: req.body.parentIndex,
         ranges: req.body.ranges,
         shapes: req.body.shapes,
         permissions: req.body.permissions,
         annotation_categories: req.body.annotation_categories,
-        sort_position: req.body.sort_position
+        sort_position: req.body.sort_position,
+        doc_title: req.body.doc_title,
+        doc_author: req.body.doc_author,
+        doc_date: req.body.doc_date,
+        doc_publisher: req.body.doc_publisher,
+        doc_edition: req.body.doc_edition,
+        doc_source: req.body.doc_source
     });
 
     annotation.save(function(err) {
@@ -375,13 +425,19 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.quote = req.body.quote;
         annotation.tags = req.body.tags;
         annotation.groups = req.body.groups;
-        annotation.subgroups = req.body.subgroups;
+        annotation.group_ids = req.body.group_ids;
         annotation.uuid = req.body.uuid;
         annotation.parentIndex = req.body.parentIndex;
         annotation.ranges = req.body.ranges;
         annotation.permissions = req.body.permissions;
         annotation.annotation_categories = req.body.annotation_categories;
         annotation.sort_position = req.body.sort_position;
+        annotation.doc_title = req.body.doc_title;
+        annotation.doc_author = req.body.doc_author;
+        annotation.doc_date = req.body.doc_date;
+        annotation.doc_publisher = req.body.doc_publisher;
+        annotation.doc_edition = req.body.doc_edition;
+        annotation.doc_source = req.body.doc_source;
 
         return annotation.save(function(err) {
             if (!err) {
@@ -408,18 +464,6 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
     });
 });
 
-// Middleware config
-app.use(lessMiddleware(__dirname + '/public', {
-  render:{
-    compress: true
-  }
-}));
-
-app.use(express.static(path.join(application_root, "public")));
-app.use(errorhandler({
-    dumpExceptions: true,
-    showStack: true
-}));
 
 // Authentication
 function tokenOK(req, res, next) {
