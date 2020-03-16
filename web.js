@@ -184,7 +184,7 @@ var Annotation = new Schema({
 });
 
 // DB
-mongoose.connect(db);
+mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true});
 
 // Middleware config
 app.use(allowCrossDomain);
