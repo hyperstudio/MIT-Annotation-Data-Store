@@ -295,7 +295,7 @@ app.get('/api/search', tokenOK, function(req, res) {
         query.where('annotation_categories'). in (req.query.annotation_categories);
     }
 
-    query.limit(req.query.limit);
+    query.limit(Number(req.query.limit));
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search") {
       query.exec(function(err, annotations) {
