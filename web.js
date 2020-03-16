@@ -35,6 +35,7 @@ var allowCrossDomain = function(req, res, next) {
 
     // intercept OPTIONS method
     if ('OPTIONS' == req.method) {
+        console.log('options method');
         return res.status(200);
     } else {
         next();
@@ -223,6 +224,7 @@ app.get('/api', function(req, res) {
 
 // Search annotations
 app.get('/api/search', tokenOK, function(req, res) {
+    console.log('search started');
     var query;
     var re = new RegExp(req.query.host, 'i');
     var exd = req.query.uri;
