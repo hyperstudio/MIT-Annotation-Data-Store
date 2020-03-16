@@ -35,7 +35,7 @@ var allowCrossDomain = function(req, res, next) {
 
     // intercept OPTIONS method
     if ('OPTIONS' == req.method) {
-        res.sendStatus(200);
+        return res.status(200);
     } else {
         next();
     }
@@ -184,7 +184,9 @@ var Annotation = new Schema({
 });
 
 // DB
-mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true}).catch(function(err){
+    console.log(err);
+});
 
 // Middleware config
 app.use(allowCrossDomain);
@@ -225,7 +227,7 @@ app.get('/api/search', tokenOK, function(req, res) {
     var re = new RegExp(req.query.host, 'i');
     var exd = req.query.uri;
     if(req.query.uri) {
-      exd = req.query.uri.replace('https://','').replace('http://','').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        exd = req.query.uri.replace('https://','').replace('http://','').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
     switch (req.query.context) {
       case 'document':
@@ -304,7 +306,7 @@ app.get('/api/search', tokenOK, function(req, res) {
             return res.send(annotations);
           }
           else {
-            return res.send(204, 'Successfully deleted annotation.');
+            return res.status(204);
           }
         }
         else {
@@ -321,7 +323,7 @@ app.get('/api/search', tokenOK, function(req, res) {
             });
           }
           else {
-            return res.send(204, 'Successfully deleted annotation.');
+            return res.status(204);
           }
         }
         else {
@@ -456,7 +458,7 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
         return annotation.remove(function(err) {
             if (!err) {
                 console.log("removed");
-                return res.send(204, 'Successfully deleted annotation.');
+                return res.status(204);
             } else {
                 console.log(err);
             }
