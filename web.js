@@ -222,6 +222,7 @@ app.get('/api', function(req, res) {
 
 // Search annotations
 app.get('/api/search', tokenOK, function(req, res) {
+    console.log('searching...');
     var query;
     var re = new RegExp(req.query.host, 'i');
     var exd = req.query.uri;
@@ -230,9 +231,11 @@ app.get('/api/search', tokenOK, function(req, res) {
     }
     switch (req.query.context) {
       case 'document':
-        query = AnnotationModel.find({
-          'uri': {$regex: exd, $options:"i"}
-        });
+        if(exd){
+            query = AnnotationModel.find({
+            'uri': {$regex: exd, $options:"i"}
+            });
+        }
         break;
       case 'dashboard':
         query = AnnotationModel.find();
@@ -241,14 +244,16 @@ app.get('/api/search', tokenOK, function(req, res) {
       case 'public':
         query = AnnotationModel.find();
         var pattern = new RegExp("\/public\/(.+)$", 'i');
-        var match = pattern.exec(req.query.uri.replace(/\/$/, ''));
-        var slug = match[1];
-        query.where('uri').regex(new RegExp(slug, "i"));
+        if(req.query.uri){
+            var match = pattern.exec(req.query.uri.replace(/\/$/, ''));
+            var slug = match[1];
+            query.where('uri').regex(new RegExp(slug, "i"));
+        }
         break;
       case 'search':
         query = AnnotationModel.find();
         query.where('uri').regex(re);
-        if (req.query.uri) {
+        if (exd) {
             query.where('uri').regex(new RegExp(exd,'i'));
         }
         break;
@@ -296,7 +301,9 @@ app.get('/api/search', tokenOK, function(req, res) {
         query.where('annotation_categories'). in (req.query.annotation_categories);
     }
 
-    query.limit(Number(req.query.limit));
+    if(req.query.limit){
+        query.limit(Number(req.query.limit));
+    }
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search") {
       query.exec(function(err, annotations) {
@@ -305,11 +312,13 @@ app.get('/api/search', tokenOK, function(req, res) {
             return res.send(annotations);
           }
           else {
-            return res.status(204);
+            res.status(204);
+            return res.send('empty');
           }
         }
         else {
-          return console.log(err);
+          console.log(err);
+          return res.send(err);
         }
       });
     }
@@ -322,11 +331,13 @@ app.get('/api/search', tokenOK, function(req, res) {
             });
           }
           else {
-            return res.status(204);
+            res.status(204);
+            return res.send('empty');
           }
         }
         else {
-          return console.log(err);
+            console.log(err);
+            return res.send(err);
         }
       });
     }
@@ -339,7 +350,8 @@ app.get('/api/annotations', tokenOK, function(req, res) {
         if (!err) {
             return res.send(annotations);
         } else {
-            return console.log(err);
+            console.log(err);
+            return res.send(err);
         }
     });
 });
@@ -350,7 +362,8 @@ app.get('/api/annotations/:id', tokenOK, function(req, res) {
         if (!err) {
             return res.send(annotation);
         } else {
-            return console.log(err);
+            console.log(err);
+            return res.send(err);
         }
     });
 });
@@ -439,15 +452,20 @@ app.put('/api/annotations/:id', tokenOK, function(req, res) {
         annotation.doc_publisher = req.body.doc_publisher;
         annotation.doc_edition = req.body.doc_edition;
         annotation.doc_source = req.body.doc_source;
-
-        return annotation.save(function(err) {
-            if (!err) {
-                console.log("updated");
-            } else {
-                console.log(err);
-            }
-            return res.send(annotation);
-        });
+        if(!err){
+            return annotation.save(function(err) {
+                if (!err) {
+                    console.log("updated");
+                } else {
+                    console.log(err);
+                }
+                return res.send(annotation);
+            });
+        }
+        else{
+            console.log(err);
+            return err;
+        }
     });
 });
 
@@ -457,9 +475,11 @@ app.delete('/api/annotations/:id', tokenOK, function(req, res) {
         return annotation.remove(function(err) {
             if (!err) {
                 console.log("removed");
-                return res.status(204);
+                res.status(204);
+                return res.send('empty');
             } else {
                 console.log(err);
+                return res.send(err);
             }
         });
     });
