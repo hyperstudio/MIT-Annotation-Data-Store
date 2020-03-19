@@ -11,6 +11,7 @@ function encodeMongoURI (urlString) {
 
 
 var application_root = __dirname,
+    environment = process.env.NODE_ENV,
     secret = process.env.SECRET,
     port = process.env.PORT,
     db = encodeMongoURI(process.env.DB),
@@ -190,9 +191,10 @@ mongoose.connect(db, {useNewUrlParser: true, useUnifiedTopology: true}).catch(fu
 // Middleware config
 app.use(allowCrossDomain);
 app.use(express.urlencoded({
+  limit: '50mb',
   extended: true
 }));
-app.use(express.json());
+app.use(express.json({limit: '50mb'}));
 app.use(methodOverride());
 app.use(lessMiddleware(__dirname + '/public', {
     render:{
@@ -515,6 +517,22 @@ function inWindow(decoded, next) {
 }
 
 // launch server
-app.listen(port, function() {
-    console.log("Listening on " + port);
-});
+
+// dev env = local SSL
+if(environment == "development"){
+    const fs = require('fs'),
+    https = require('https');
+    https.createServer({
+        key: fs.readFileSync('server.key'),
+        cert: fs.readFileSync('server.cert')
+      }, app)
+      .listen(port, function () {
+        console.log('Listening on SSL port: '+port)
+      })      
+}
+// prod env = server handles SSL
+else{
+    app.listen(port, function() {
+        console.log("Listening on " + port);
+    });
+}

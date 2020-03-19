@@ -13,5 +13,9 @@
   "engines": {
     "node": "8.16.0",
     "npm": "6.4.1"
+  },
+  "devDependencies": {
+    "fs": "0.0.1-security",
+    "https": "^1.0.0"
   }
 }
