@@ -17,6 +17,8 @@ var application_root = __dirname,
     db = encodeMongoURI(process.env.DB),
     consumer = process.env.CONSUMER,
     version = process.env.VERSION,
+    local_key = process.env.LOCAL_KEY_PATH,
+    local_cert = process.env.LOCAL_CERT_PATH,
     path = require("path"),
     mongoose = require('mongoose'),
     lessMiddleware = require('less-middleware'),
@@ -523,8 +525,8 @@ if(environment == "development"){
     const fs = require('fs'),
     https = require('https');
     https.createServer({
-        key: fs.readFileSync('server.key'),
-        cert: fs.readFileSync('server.cert')
+        key: fs.readFileSync(local_key),
+        cert: fs.readFileSync(local_cert)
       }, app)
       .listen(port, function () {
         console.log('Listening on SSL port: '+port)
