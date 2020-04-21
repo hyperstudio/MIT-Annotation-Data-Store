@@ -305,6 +305,10 @@ app.get('/api/search', tokenOK, function(req, res) {
         query.where('annotation_categories'). in (req.query.annotation_categories);
     }
 
+    if (req.query.anno_ids){
+        query.where('_id'). in (req.query.anno_ids);
+    }
+    
     if(req.query.limit){
         query.limit(Number(req.query.limit));
     }
