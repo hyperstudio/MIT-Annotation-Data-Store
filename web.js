@@ -262,7 +262,10 @@ app.get('/api/search', tokenOK, function(req, res) {
         }
         break;
     }
-
+    if (query == undefined){
+        // throw err
+        // else do below
+    }
     switch (req.query.mode) {
         case 'user':
             query.where('user').equals(req.query.user);
@@ -506,6 +509,10 @@ function tokenOK(req, res, next) {
         next();
     } catch (err) {
         console.log("Error decoding token:");
+        if(req.header('x-annotator-auth-token') != undefined)
+            console.log(jwt.decode(req.header('x-annotator-auth-token'), secret));
+        else
+            console.log('x-annotator-auth-token header == undefined');
         console.log(err);
         return res.send("There was a problem with your authentication token");
     }
