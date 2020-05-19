@@ -510,7 +510,7 @@ function tokenOK(req, res, next) {
     } catch (err) {
         console.log("Error decoding token:");
         if(req.header('x-annotator-auth-token') != undefined)
-            console.log(jwt.decode(req.header('x-annotator-auth-token'), secret));
+            console.log("header: " + req.header('x-annotator-auth-token'));
         else
             console.log('x-annotator-auth-token header == undefined');
         console.log(err);
