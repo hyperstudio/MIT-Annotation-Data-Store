@@ -434,6 +434,8 @@ app.post('/api/annotations/positions', tokenOK, function(req, res) {
 // PUT to UPDATE
 // Single update
 app.put('/api/annotations/:id', tokenOK, function(req, res) {
+    console.log("PUT: ");
+    console.log(req.body);
     return AnnotationModel.findById(req.params.id, function(err, annotation) {
         annotation._id = req.body._id;
         annotation.id = req.body._id;
