@@ -313,7 +313,7 @@ app.get('/api/search', tokenOK, function(req, res) {
     }
     
     if(req.query.limit){
-        query.sort({'updated': -1}).limit(Number(req.query.limit));
+        query.sort({'created': -1}).limit(Number(req.query.limit));
     }
 
     if (req.query.sidebar || req.query.context == "dashboard" || req.query.context == "search") {
