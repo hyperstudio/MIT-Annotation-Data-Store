@@ -302,7 +302,10 @@ app.get('/api/search', tokenOK, function(req, res) {
     }
 
     if (req.query.tags) {
-        query.where('tags'). in (req.query.tags.split(/[\s,]+/));
+        query.where('tags'). in (req.query.tags);
+    }
+    if (req.query.multiUser) {
+        query.where('user'). in (req.query.multiUser);
     }
     if (req.query.annotation_categories) {
         query.where('annotation_categories'). in (req.query.annotation_categories);
