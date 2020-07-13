@@ -280,7 +280,7 @@ app.get('/api/search', tokenOK, function(req, res) {
             else{
               query.where('groups'). in ([]);
             }
-            query.$where('this.permissions.read.length < 1');
+            query.where('permissions.read').equals([]);
             break;
         case 'groupId':
             if(req.query.group_ids){
@@ -289,15 +289,15 @@ app.get('/api/search', tokenOK, function(req, res) {
             else{
                 query.where('group_ids'). in ([]);
             }
-            query.$where('this.permissions.read.length < 1');
+            query.where('permissions.read').equals([]);
             break;
         case 'admin':
-            query.$where('this.permissions.read.length < 1');
+            query.where('permissions.read').equals([]);
             break;
         // for annotations search by other users:
         case 'userSearch':
             query.where('user').equals(req.query.user);
-            query.$where('this.permissions.read.length < 1');
+            query.where('permissions.read').equals([]);
             break;
     }
 
