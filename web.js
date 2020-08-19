@@ -358,6 +358,42 @@ app.get('/api/search', tokenOK, function(req, res) {
 });
 
 
+// Search annotations by multiple IDs (with POST)
+app.post('/api/search', tokenOK, function(req, res) {
+    console.log('searching...');
+    var query;
+    if(req.query.host){
+        var re = new RegExp(req.query.host, 'i');
+        query = AnnotationModel.find();
+        query.where('uri').regex(re);
+        if(req.body.anno_ids){
+            query.where('_id').in(req.body.anno_ids);
+            query.exec(function(err, annotations) {
+                if (!err) {
+                    if (annotations.length > 0) {
+                        return res.send(annotations);
+                    }
+                    else {
+                        res.status(204);
+                        return res.send('empty');
+                    }
+                }
+                else {
+                    console.log(err);
+                    return res.send(err);
+                }
+            });        
+        } else {
+            res.status(204);
+            return res.send('empty');
+        }
+    } else {
+        res.status(404);
+        return res.send('not found');
+    }
+})
+
+
 // List annotations
 app.get('/api/annotations', tokenOK, function(req, res) {
     return AnnotationModel.find(function(err, annotations) {
