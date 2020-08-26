@@ -190,6 +190,10 @@ mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }).catch(
   console.log(err);
 });
 
+mongoose.connection.on('error', err => {
+  logError(err);
+});
+
 // Middleware config
 app.use(allowCrossDomain);
 app.use(express.urlencoded({
